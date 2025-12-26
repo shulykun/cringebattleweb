@@ -5,7 +5,7 @@ import './GamePage.css';
 
 const GamePage = () => {
   const [userId] = useState(() => localStorage.getItem('userId') || '');
-  const [gameMessage, setGameMessage] = useState(null);
+  const [messages, setMessages] = useState([]); // История сообщений
   const [scoreData, setScoreData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [inputText, setInputText] = useState('');
@@ -23,7 +23,7 @@ const GamePage = () => {
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [gameMessage]);
+  }, [messages]);
 
   const loadScore = async () => {
     try {
@@ -38,7 +38,14 @@ const GamePage = () => {
     setLoading(true);
     try {
       const response = await sendMessage(userId, 'Играть');
-      setGameMessage(response.response);
+      // Добавляем сообщение от игры в историю
+      setMessages([{
+        type: 'game',
+        text: response.response.text,
+        image: response.response.image,
+        buttons: response.response.buttons,
+        end_session: response.response.end_session
+      }]);
       await loadScore();
     } catch (error) {
       console.error('Error starting game:', error);
@@ -51,8 +58,22 @@ const GamePage = () => {
   const handleButtonClick = async (button) => {
     setLoading(true);
     try {
+      // Добавляем сообщение пользователя (нажатие кнопки)
+      const userMessage = {
+        type: 'user',
+        text: button.title
+      };
+      setMessages(prev => [...prev, userMessage]);
+      
       const response = await sendMessage(userId, null, null, button);
-      setGameMessage(response.response);
+      // Добавляем ответ от игры
+      setMessages(prev => [...prev, {
+        type: 'game',
+        text: response.response.text,
+        image: response.response.image,
+        buttons: response.response.buttons,
+        end_session: response.response.end_session
+      }]);
       await loadScore();
       
       if (response.response?.end_session) {
@@ -72,11 +93,27 @@ const GamePage = () => {
     e.preventDefault();
     if (!inputText.trim() || loading) return;
 
+    const userText = inputText.trim();
+    setInputText('');
     setLoading(true);
+    
     try {
-      const response = await sendMessage(userId, inputText.trim());
-      setGameMessage(response.response);
-      setInputText('');
+      // Добавляем сообщение пользователя в историю
+      const userMessage = {
+        type: 'user',
+        text: userText
+      };
+      setMessages(prev => [...prev, userMessage]);
+      
+      const response = await sendMessage(userId, userText);
+      // Добавляем ответ от игры
+      setMessages(prev => [...prev, {
+        type: 'game',
+        text: response.response.text,
+        image: response.response.image,
+        buttons: response.response.buttons,
+        end_session: response.response.end_session
+      }]);
       await loadScore();
       
       if (response.response?.end_session) {
@@ -87,6 +124,8 @@ const GamePage = () => {
     } catch (error) {
       console.error('Error sending message:', error);
       alert('Ошибка при отправке сообщения. Попробуйте еще раз.');
+      // Удаляем последнее сообщение пользователя при ошибке
+      setMessages(prev => prev.slice(0, -1));
     } finally {
       setLoading(false);
     }
@@ -113,43 +152,58 @@ const GamePage = () => {
       <div className="game-content">
         <div className="game-chat-container">
           <div className="game-chat">
-            {loading && !gameMessage && (
+            {loading && messages.length === 0 && (
               <div className="loading-message">Загрузка...</div>
             )}
             
-            {gameMessage && (
-              <div className="message-container">
-                {gameMessage.image && (
-                  <div className="message-image">
-                    <img 
-                      src={getImageUrl(gameMessage.image)} 
-                      alt="Game scene"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                      }}
-                    />
+            {messages.map((message, index) => (
+              <div 
+                key={index} 
+                className={`message-wrapper ${message.type === 'user' ? 'user-message' : 'game-message'}`}
+              >
+                {message.type === 'user' ? (
+                  <div className="user-message-bubble">
+                    {message.text}
                   </div>
-                )}
-                
-                <div className="message-text">
-                  {gameMessage.text}
-                </div>
+                ) : (
+                  <div className="message-container">
+                    {message.image && (
+                      <div className="message-image">
+                        <img 
+                          src={getImageUrl(message.image)} 
+                          alt="Game scene"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+                    
+                    <div className="game-message-bubble">
+                      {message.text}
+                    </div>
 
-                {gameMessage.buttons && gameMessage.buttons.length > 0 && (
-                  <div className="message-buttons">
-                    {gameMessage.buttons.map((button, index) => (
-                      <button
-                        key={index}
-                        className="game-button"
-                        onClick={() => handleButtonClick(button)}
-                        disabled={loading}
-                      >
-                        {button.title}
-                      </button>
-                    ))}
+                    {message.buttons && message.buttons.length > 0 && (
+                      <div className="message-buttons">
+                        {message.buttons.map((button, btnIndex) => (
+                          <button
+                            key={btnIndex}
+                            className="game-button"
+                            onClick={() => handleButtonClick(button)}
+                            disabled={loading}
+                          >
+                            {button.title}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
+            ))}
+
+            {loading && messages.length > 0 && (
+              <div className="loading-indicator">...</div>
             )}
 
             <div ref={chatEndRef} />
