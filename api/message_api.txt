@@ -1,0 +1,48 @@
+Эндпоинт для апи сообщений:
+https://cringebattle22.roborumba.com/web_chat
+Метод POST
+
+Пример ответа для отрисовки в UI
+{
+    "user_id": "12345",
+    "response": {
+        "text": "Текст для отрисовки в UI",
+        "image":"path.jpeg",
+        "buttons": [
+            {
+            "title": "Пропустить",
+            "payload": "c_skip"
+        },
+        {
+            "title": "Подсказка",
+            "payload": "c_prompt"
+        }
+        ],
+        "end_session": false
+    }
+}
+text - текстовое сообщение в чате
+buttons - саджесты в чате
+image - адрес к картинке картинка
+
+
+Примеры вызовов для отправки в бэкенд
+Запрос (отправка текста)
+
+{
+    "user_id": "12345",
+    "request": {
+        "original_utterance": "Играть",
+        "type": "SimpleUtterance"
+    }
+}
+
+Запрос (нажатие кнопки)
+
+{
+    "meta": {},
+    "user_id": "12345",
+    "request": {
+        "callback": {"title":"Играть", "payload":"paly"},
+    }
+}
