@@ -56,24 +56,34 @@ const GamePage = () => {
   };
 
   const handleButtonClick = async (button) => {
+    if (loading) return;
+
+    const previousMessages = messages;
     setLoading(true);
+
+    // Сообщение пользователя (нажатие кнопки)
+    const userMessage = {
+      type: 'user',
+      text: button.title,
+    };
+
+    // В чате показываем только текущую реплику пользователя
+    setMessages([userMessage]);
+
     try {
-      // Добавляем сообщение пользователя (нажатие кнопки)
-      const userMessage = {
-        type: 'user',
-        text: button.title
-      };
-      setMessages(prev => [...prev, userMessage]);
-      
       const response = await sendMessage(userId, null, null, button);
-      // Добавляем ответ от игры
-      setMessages(prev => [...prev, {
+
+      // Ответ игры
+      const gameMessage = {
         type: 'game',
         text: response.response.text,
         image: response.response.image,
         buttons: response.response.buttons,
-        end_session: response.response.end_session
-      }]);
+        end_session: response.response.end_session,
+      };
+
+      // В чате оставляем только последнюю пару: пользователь + игра
+      setMessages([userMessage, gameMessage]);
       await loadScore();
       
       if (response.response?.end_session) {
@@ -84,6 +94,8 @@ const GamePage = () => {
     } catch (error) {
       console.error('Error sending button click:', error);
       alert('Ошибка при отправке. Попробуйте еще раз.');
+      // Откатываемся к предыдущему состоянию (убираем неуспешное сообщение пользователя)
+      setMessages(previousMessages);
     } finally {
       setLoading(false);
     }
@@ -95,6 +107,7 @@ const GamePage = () => {
 
     const userText = inputText.trim();
     setInputText('');
+    const previousMessages = messages;
     setLoading(true);
     
     try {
@@ -103,17 +116,20 @@ const GamePage = () => {
         type: 'user',
         text: userText
       };
-      setMessages(prev => [...prev, userMessage]);
+      // В чате показываем только текущую реплику пользователя
+      setMessages([userMessage]);
       
       const response = await sendMessage(userId, userText);
       // Добавляем ответ от игры
-      setMessages(prev => [...prev, {
+      const gameMessage = {
         type: 'game',
         text: response.response.text,
         image: response.response.image,
         buttons: response.response.buttons,
         end_session: response.response.end_session
-      }]);
+      };
+      // В чате оставляем только последнюю пару: пользователь + игра
+      setMessages([userMessage, gameMessage]);
       await loadScore();
       
       if (response.response?.end_session) {
@@ -124,8 +140,8 @@ const GamePage = () => {
     } catch (error) {
       console.error('Error sending message:', error);
       alert('Ошибка при отправке сообщения. Попробуйте еще раз.');
-      // Удаляем последнее сообщение пользователя при ошибке
-      setMessages(prev => prev.slice(0, -1));
+      // Откатываемся к предыдущему состоянию (убираем неуспешное сообщение пользователя)
+      setMessages(previousMessages);
     } finally {
       setLoading(false);
     }
