@@ -9,6 +9,7 @@ const GamePage = () => {
   const [scoreData, setScoreData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [inputText, setInputText] = useState('');
+  const [currentButtons, setCurrentButtons] = useState([]); // Текущие кнопки для отображения
   const navigate = useNavigate();
   const chatEndRef = useRef(null);
 
@@ -18,7 +19,6 @@ const GamePage = () => {
       return;
     }
     loadScore();
-    startGame();
   }, [userId, navigate]);
 
   useEffect(() => {
@@ -34,32 +34,14 @@ const GamePage = () => {
     }
   };
 
-  const startGame = async () => {
-    setLoading(true);
-    try {
-      const response = await sendMessage(userId, 'Играть');
-      // Добавляем сообщение от игры в историю
-      setMessages([{
-        type: 'game',
-        text: response.response.text,
-        image: response.response.image,
-        buttons: response.response.buttons,
-        end_session: response.response.end_session
-      }]);
-      await loadScore();
-    } catch (error) {
-      console.error('Error starting game:', error);
-      alert('Ошибка при запуске игры. Попробуйте еще раз.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleButtonClick = async (button) => {
     if (loading) return;
 
     const previousMessages = messages;
     setLoading(true);
+    
+    // Очищаем кнопки сразу при нажатии
+    setCurrentButtons([]);
 
     // Сообщение пользователя (нажатие кнопки)
     const userMessage = {
@@ -67,8 +49,9 @@ const GamePage = () => {
       text: button.title,
     };
 
-    // В чате показываем только текущую реплику пользователя
-    setMessages([userMessage]);
+    // Берем только последние 2 сообщения (предыдущая пара) и добавляем новое сообщение пользователя
+    const previousPair = messages.slice(-2);
+    setMessages([...previousPair, userMessage]);
 
     try {
       const response = await sendMessage(userId, null, null, button);
@@ -82,8 +65,13 @@ const GamePage = () => {
         end_session: response.response.end_session,
       };
 
-      // В чате оставляем только последнюю пару: пользователь + игра
-      setMessages([userMessage, gameMessage]);
+      // Убираем лоадер перед добавлением сообщений
+      setLoading(false);
+
+      // Сохраняем только последние 2 пары: предыдущая пара + текущая пара
+      setMessages([...previousPair, userMessage, gameMessage]);
+      // Сохраняем кнопки для отображения под формой ввода
+      setCurrentButtons(gameMessage.buttons || []);
       await loadScore();
       
       if (response.response?.end_session) {
@@ -93,11 +81,10 @@ const GamePage = () => {
       }
     } catch (error) {
       console.error('Error sending button click:', error);
-      alert('Ошибка при отправке. Попробуйте еще раз.');
-      // Откатываемся к предыдущему состоянию (убираем неуспешное сообщение пользователя)
-      setMessages(previousMessages);
-    } finally {
       setLoading(false);
+      alert('Ошибка при отправке. Попробуйте еще раз.');
+      // Откатываемся к предыдущему состоянию
+      setMessages(previousMessages);
     }
   };
 
@@ -110,14 +97,18 @@ const GamePage = () => {
     const previousMessages = messages;
     setLoading(true);
     
+    // Очищаем кнопки сразу при отправке текста
+    setCurrentButtons([]);
+    
     try {
       // Добавляем сообщение пользователя в историю
       const userMessage = {
         type: 'user',
         text: userText
       };
-      // В чате показываем только текущую реплику пользователя
-      setMessages([userMessage]);
+      // Берем только последние 2 сообщения (предыдущая пара) и добавляем новое сообщение пользователя
+      const previousPair = messages.slice(-2);
+      setMessages([...previousPair, userMessage]);
       
       const response = await sendMessage(userId, userText);
       // Добавляем ответ от игры
@@ -128,8 +119,14 @@ const GamePage = () => {
         buttons: response.response.buttons,
         end_session: response.response.end_session
       };
-      // В чате оставляем только последнюю пару: пользователь + игра
-      setMessages([userMessage, gameMessage]);
+
+      // Убираем лоадер перед добавлением сообщений
+      setLoading(false);
+
+      // Сохраняем только последние 2 пары: предыдущая пара + текущая пара
+      setMessages([...previousPair, userMessage, gameMessage]);
+      // Сохраняем кнопки для отображения под формой ввода
+      setCurrentButtons(gameMessage.buttons || []);
       await loadScore();
       
       if (response.response?.end_session) {
@@ -139,11 +136,10 @@ const GamePage = () => {
       }
     } catch (error) {
       console.error('Error sending message:', error);
-      alert('Ошибка при отправке сообщения. Попробуйте еще раз.');
-      // Откатываемся к предыдущему состоянию (убираем неуспешное сообщение пользователя)
-      setMessages(previousMessages);
-    } finally {
       setLoading(false);
+      alert('Ошибка при отправке сообщения. Попробуйте еще раз.');
+      // Откатываемся к предыдущему состоянию
+      setMessages(previousMessages);
     }
   };
 
@@ -172,54 +168,75 @@ const GamePage = () => {
               <div className="loading-message">Загрузка...</div>
             )}
             
+            {!loading && messages.length === 0 && (
+              <div className="message-wrapper game-message">
+                <div className="message-avatar game-avatar">
+                  🎮
+                </div>
+                <div className="message-container">
+                  <div className="game-message-bubble">
+                    Напишите ваше сообщение чтобы продолжить игру
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {messages.map((message, index) => (
               <div 
                 key={index} 
                 className={`message-wrapper ${message.type === 'user' ? 'user-message' : 'game-message'}`}
               >
                 {message.type === 'user' ? (
-                  <div className="user-message-bubble">
-                    {message.text}
-                  </div>
-                ) : (
-                  <div className="message-container">
-                    {message.image && (
-                      <div className="message-image">
-                        <img 
-                          src={getImageUrl(message.image)} 
-                          alt="Game scene"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                          }}
-                        />
-                      </div>
-                    )}
-                    
-                    <div className="game-message-bubble">
+                  <>
+                    <div className="user-message-bubble">
                       {message.text}
                     </div>
-
-                    {message.buttons && message.buttons.length > 0 && (
-                      <div className="message-buttons">
-                        {message.buttons.map((button, btnIndex) => (
-                          <button
-                            key={btnIndex}
-                            className="game-button"
-                            onClick={() => handleButtonClick(button)}
-                            disabled={loading}
-                          >
-                            {button.title}
-                          </button>
-                        ))}
+                    <div className="message-avatar user-avatar">
+                      👤
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="message-avatar game-avatar">
+                      🎮
+                    </div>
+                    <div className="message-container">
+                      {message.image && (
+                        <div className="message-image">
+                          <img 
+                            src={getImageUrl(message.image)} 
+                            alt="Game scene"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      )}
+                      
+                      <div className="game-message-bubble">
+                        {message.text}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  </>
                 )}
               </div>
             ))}
 
             {loading && messages.length > 0 && (
-              <div className="loading-indicator">...</div>
+              <div className="message-wrapper game-message">
+                <div className="message-avatar game-avatar">
+                  🎮
+                </div>
+                <div className="message-container">
+                  <div className="game-message-bubble loading-bubble">
+                    <div className="loading-dots">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
 
             <div ref={chatEndRef} />
@@ -242,6 +259,26 @@ const GamePage = () => {
               Отправить
             </button>
           </form>
+          
+          <div className="suggestion-buttons">
+            <h3 className="suggestion-title">Действия</h3>
+            <div className="suggestion-buttons-container">
+              {currentButtons && currentButtons.length > 0 ? (
+                currentButtons.map((button, btnIndex) => (
+                  <button
+                    key={btnIndex}
+                    className="suggestion-button"
+                    onClick={() => handleButtonClick(button)}
+                    disabled={loading}
+                  >
+                    {button.title}
+                  </button>
+                ))
+              ) : (
+                <div className="suggestion-empty">Нет доступных действий</div>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="score-panel">

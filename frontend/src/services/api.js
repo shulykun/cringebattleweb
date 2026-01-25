@@ -1,17 +1,34 @@
 import axios from 'axios';
 
-// Прямые запросы к игровому API
-const SCORE_API_URL = 'https://cringebattle22.roborumba.com/web_score';
-const MESSAGE_API_URL = 'https://cringebattle22.roborumba.com/web_chat';
+// Backend API URL
+// По умолчанию используем http://127.0.0.1:5000/api
+// В development можно использовать proxy из package.json (перенаправляет на http://127.0.0.1:5000)
+// Для production установите REACT_APP_API_URL=https://your-production-domain.com/api
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000/api';
 
 const api = axios.create({
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
+// Auth endpoints
+export const authWithYandex = async (codeOrToken) => {
+  // Backend должен определить, это code или token, и обработать соответственно
+  // Для упрощения отправляем как code (backend должен обменять на token)
+  const response = await api.post('/auth/yandex', { code: codeOrToken });
+  return response.data;
+};
+
+export const getUser = async (userId) => {
+  const response = await api.get('/auth/user', { params: { user_id: userId } });
+  return response.data;
+};
+
+// Game API endpoints (через backend)
 export const getScore = async (userId) => {
-  const response = await api.post(SCORE_API_URL, { user_id: userId });
+  const response = await api.post('/score', { user_id: userId });
   return response.data;
 };
 
@@ -30,7 +47,7 @@ export const sendMessage = async (userId, message, type = 'SimpleUtterance', cal
     payload.meta = {};
   }
   
-  const response = await api.post(MESSAGE_API_URL, payload);
+  const response = await api.post('/message', payload);
   return response.data;
 };
 
