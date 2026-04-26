@@ -25,6 +25,9 @@ const HomePage = () => {
         <button className="home-button" onClick={handleStart}>
           Начать игру
         </button>
+        <button className="home-button duel" onClick={() => navigate('/duel')}>
+          ⚔️ Дуэль с другом
+        </button>
         <div className="home-features">
           <div className="feature">
             <span className="feature-icon">💬</span>

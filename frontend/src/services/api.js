@@ -51,5 +51,26 @@ export const sendMessage = async (userId, message, type = 'SimpleUtterance', cal
   return response.data;
 };
 
+// Duel API endpoints
+export const duelCreate = async (userId, nickname = '') => {
+  const response = await api.post('/duel/create', { user_id: userId, nickname });
+  return response.data;
+};
+
+export const duelAccept = async (userId, code, nickname = '') => {
+  const response = await api.post('/duel/accept', { user_id: userId, code, nickname });
+  return response.data;
+};
+
+export const duelAnswer = async (userId, duelId, answer) => {
+  const response = await api.post('/duel/answer', { user_id: userId, duel_id: duelId, answer });
+  return response.data;
+};
+
+export const duelStatus = async (userId, duelId) => {
+  const response = await api.get(`/duel/status/${duelId}`, { params: { user_id: userId } });
+  return response.data;
+};
+
 export default api;
 

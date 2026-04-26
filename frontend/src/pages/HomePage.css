@@ -41,6 +41,12 @@
   font-weight: 600;
   transition: transform 0.2s, box-shadow 0.2s;
   box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+  margin-bottom: 15px;
+}
+
+.home-button.duel {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
 }
 
 .home-button:hover {

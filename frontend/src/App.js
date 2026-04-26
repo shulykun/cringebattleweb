@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import GamePage from './pages/GamePage';
 import ProfilePage from './pages/ProfilePage';
+import ChallengePage from './pages/ChallengePage';
 import './App.css';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/game" element={<GamePage />} />
+        <Route path="/duel" element={<ChallengePage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
