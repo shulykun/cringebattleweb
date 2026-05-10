@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { duelCreate, duelAccept, duelAnswer, duelStatus } from '../services/api';
 import './ChallengePage.css';
 
@@ -8,6 +8,7 @@ const POLL_INTERVAL = 3000;
 const ChallengePage = () => {
   const [userId] = useState(() => localStorage.getItem('userId') || '');
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const pollRef = useRef(null);
 
   // Экраны: menu | waiting | task | answering | result | evaluating
@@ -34,6 +35,12 @@ const ChallengePage = () => {
     if (!userId) {
       navigate('/login');
       return;
+    }
+    // Авто-подключение по ссылке с кодом
+    const codeFromUrl = searchParams.get('code');
+    if (codeFromUrl) {
+      setJoinCode(codeFromUrl);
+      setScreen('join_by_link');
     }
     return () => stopPolling();
   }, [userId, navigate]);
@@ -177,9 +184,19 @@ const ChallengePage = () => {
     setError('');
   };
 
+  // ── Ссылка-приглашение ───────────────────────
+  const getInviteLink = () => {
+    const base = window.location.origin;
+    return `${base}/duel?code=${code}`;
+  };
+
   // ── Копировать код ───────────────────────────
   const copyCode = () => {
     navigator.clipboard.writeText(code);
+  };
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(getInviteLink());
   };
 
   // ── Рендер экранов ───────────────────────────
@@ -252,6 +269,10 @@ const ChallengePage = () => {
               {code}
             </div>
             <p className="hint">Нажми на код чтобы скопировать</p>
+            <button className="challenge-btn secondary" onClick={copyLink}>
+              📋 Скопировать ссылку
+            </button>
+            <p className="hint">Или отправь ссылку: <a href={getInviteLink()} target="_blank" rel="noreferrer">{getInviteLink()}</a></p>
             <div className="waiting-dots">
               <span></span><span></span><span></span>
             </div>
@@ -328,6 +349,31 @@ const ChallengePage = () => {
             </div>
             <p>Ждём ответ соперника...</p>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === 'join_by_link') {
+    return (
+      <div className="challenge-page">
+        <div className="challenge-header">
+          <button className="header-button" onClick={() => setScreen('menu')}>
+            ← Меню
+          </button>
+          <h1 className="challenge-title">⚔️ Дуэль</h1>
+          <div />
+        </div>
+        <div className="challenge-content">
+          <div className="challenge-card">
+            <div className="card-icon">🤝</div>
+            <h2>Тебя вызывают на дуэль!</h2>
+            <p>Код: <strong>{joinCode}</strong></p>
+            <button className="challenge-btn primary" onClick={handleJoin} disabled={loading}>
+              {loading ? 'Подключение...' : 'Принять вызов ⚡'}
+            </button>
+          </div>
+          {error && <div className="challenge-error">{error}</div>}
         </div>
       </div>
     );
