@@ -64,6 +64,13 @@ const LoginPage = () => {
     window.location.href = yandexAuthUrl;
   };
 
+  const handleTestLogin = () => {
+    const testId = 'test_' + Math.random().toString(36).substring(2, 8);
+    localStorage.setItem('userId', testId);
+    localStorage.setItem('username', 'TestPlayer');
+    navigate('/duel');
+  };
+
   return (
     <div className="login-page">
       <div className="login-container">
@@ -102,6 +109,14 @@ const LoginPage = () => {
           disabled={loading}
         >
           ← На главную
+        </button>
+
+        <button
+          className="login-back-button"
+          onClick={handleTestLogin}
+          style={{marginTop: '10px', color: '#888'}}
+        >
+          🧪 Тестовый вход (без Яндекс)
         </button>
       </div>
     </div>

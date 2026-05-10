@@ -81,6 +81,12 @@
   border-color: #667eea;
 }
 
+.code-input-small {
+  font-size: 1.2rem;
+  letter-spacing: 6px;
+  max-width: 160px;
+}
+
 /* ── Buttons ──────────────────────────── */
 .challenge-btn {
   padding: 14px 32px;
@@ -362,6 +368,298 @@
   text-align: center;
 }
 
+/* ── Nickname field ─────────────────── */
+.nickname-field {
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nickname-field label {
+  color: rgba(255,255,255,0.8);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.nickname-field .code-input {
+  letter-spacing: normal;
+  font-size: 1rem;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+/* ── Players selector ────────────────── */
+.players-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.players-selector label {
+  font-weight: 600;
+  color: #555;
+}
+
+.players-selector select {
+  padding: 8px 16px;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  font-size: 1rem;
+  outline: none;
+  cursor: pointer;
+}
+
+/* ── Lobby ───────────────────────────── */
+.lobby-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 30px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.lobby-card h2 {
+  color: #667eea;
+  margin-bottom: 15px;
+}
+
+.invite-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.players-list {
+  text-align: left;
+  margin: 15px 0;
+}
+
+.players-list h3 {
+  color: #667eea;
+  margin-bottom: 10px;
+}
+
+.player-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.player-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #667eea;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.player-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.creator-badge {
+  font-size: 1.2rem;
+}
+
+/* ── Scoreboard mini ─────────────────── */
+.scoreboard-mini {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.score-chip {
+  background: #f0f2ff;
+  color: #667eea;
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* ── Answer sent ─────────────────────── */
+.answer-sent {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 30px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Round scoreboard ────────────────── */
+.round-scoreboard {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 20px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.round-scoreboard h3 {
+  color: #667eea;
+  margin-bottom: 10px;
+}
+
+.answer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.answer-row.detailed {
+  flex-wrap: wrap;
+}
+
+.answer-name {
+  font-weight: 600;
+  color: #333;
+  min-width: 80px;
+}
+
+.answer-text {
+  color: #666;
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.answer-grade {
+  font-weight: 800;
+  color: #667eea;
+  min-width: 40px;
+  text-align: right;
+}
+
+.answer-comment {
+  width: 100%;
+  color: #888;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* ── Total scoreboard ────────────────── */
+.total-scoreboard, .final-scoreboard {
+  margin: 15px 0;
+}
+
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.score-row.first {
+  background: #fff8e1;
+  border-radius: 10px;
+}
+
+.score-place {
+  font-weight: 800;
+  color: #667eea;
+  min-width: 30px;
+}
+
+.score-name {
+  flex: 1;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+}
+
+.score-total {
+  font-weight: 800;
+  color: #667eea;
+}
+
+/* ── Result actions ──────────────────── */
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.challenge-btn.secondary {
+  background: rgba(255,255,255,0.95);
+  color: #667eea;
+  border: 2px solid #667eea;
+}
+
+.all-ready {
+  color: #4caf50;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 10px 0;
+}
+
+.room-code-badge {
+  background: rgba(102, 126, 234, 0.15);
+  color: #667eea;
+  font-size: 0.8rem;
+  padding: 2px 8px;
+  border-radius: 8px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* ── Final ───────────────────────────── */
+.result-card.final {
+  max-width: 500px;
+}
+
+.rounds-history {
+  text-align: left;
+  margin: 15px 0;
+}
+
+.rounds-history h3 {
+  color: #667eea;
+  margin-bottom: 10px;
+}
+
+.history-round {
+  background: #f8f8ff;
+  border-radius: 10px;
+  padding: 10px 15px;
+  margin-bottom: 8px;
+}
+
+.history-round-header {
+  font-weight: 700;
+  color: #667eea;
+  margin-bottom: 5px;
+}
+
+.history-answer {
+  color: #555;
+  font-size: 0.9rem;
+  padding: 3px 0;
+}
+
 /* ── Mobile ───────────────────────────── */
 @media (max-width: 600px) {
   .challenge-header {
@@ -378,5 +676,31 @@
   }
   .result-vs {
     transform: rotate(90deg);
+  }
+  .challenge-card {
+    padding: 20px 25px;
+  }
+  .join-form {
+    flex-direction: column;
+  }
+  .code-input-small {
+    max-width: 100%;
+  }
+  .code-input {
+    letter-spacing: normal;
+    font-size: 1rem;
+  }
+  .nickname-field .code-input {
+    letter-spacing: normal;
+    font-size: 1rem;
+  }
+  .players-selector {
+    justify-content: center;
+  }
+  .answer-row {
+    flex-wrap: wrap;
+  }
+  .answer-name {
+    min-width: auto;
   }
 }
