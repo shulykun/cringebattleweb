@@ -432,7 +432,7 @@ const ChallengePage = () => {
           <div className="result-card">
             <h2>Результаты раунда</h2>
             <div className="round-answers">
-              {currentRoundAnswers.map((a, i) => (
+              {[...currentRoundAnswers].sort((a, b) => b.grade - a.grade).map((a, i) => (
                 <div key={i} className="answer-card">
                   <div className="answer-card-header">
                     <span className="answer-name">{a.nickname}</span>
