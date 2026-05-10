@@ -51,7 +51,7 @@ export const sendMessage = async (userId, message, type = 'SimpleUtterance', cal
   return response.data;
 };
 
-// Duel API endpoints
+// Duel v1 API (legacy)
 export const duelCreate = async (userId, nickname = '') => {
   const response = await api.post('/duel/create', { user_id: userId, nickname });
   return response.data;
@@ -69,6 +69,42 @@ export const duelAnswer = async (userId, duelId, answer) => {
 
 export const duelStatus = async (userId, duelId) => {
   const response = await api.get(`/duel/status/${duelId}`, { params: { user_id: userId } });
+  return response.data;
+};
+
+// Duel v2 API (multi-player rooms)
+export const duel2Create = async (userId, nickname = '', maxPlayers = 2) => {
+  const response = await api.post('/duel2/create', { user_id: userId, nickname, max_players: maxPlayers });
+  return response.data;
+};
+
+export const duel2Accept = async (userId, code, nickname = '') => {
+  const response = await api.post('/duel2/accept', { user_id: userId, code, nickname });
+  return response.data;
+};
+
+export const duel2Start = async (userId) => {
+  const response = await api.post('/duel2/start', { user_id: userId });
+  return response.data;
+};
+
+export const duel2Answer = async (userId, roomId, answer) => {
+  const response = await api.post('/duel2/answer', { user_id: userId, room_id: roomId, answer });
+  return response.data;
+};
+
+export const duel2Next = async (userId, roomId) => {
+  const response = await api.post('/duel2/next', { user_id: userId, room_id: roomId });
+  return response.data;
+};
+
+export const duel2Finish = async (userId, roomId) => {
+  const response = await api.post('/duel2/finish', { user_id: userId, room_id: roomId });
+  return response.data;
+};
+
+export const duel2Status = async (userId, roomId) => {
+  const response = await api.get(`/duel2/status/${roomId}`, { params: { user_id: userId } });
   return response.data;
 };
 

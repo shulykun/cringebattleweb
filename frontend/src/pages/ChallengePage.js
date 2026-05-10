@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { duelCreate, duelAccept, duelAnswer, duelStatus } from '../services/api';
+import { duel2Create, duel2Accept, duel2Start, duel2Answer, duel2Next, duel2Finish, duel2Status } from '../services/api';
 import './ChallengePage.css';
 
 const POLL_INTERVAL = 3000;
@@ -11,25 +11,16 @@ const ChallengePage = () => {
   const [searchParams] = useSearchParams();
   const pollRef = useRef(null);
 
-  // Экраны: menu | waiting | task | answering | result | evaluating
+  // Экраны: menu | lobby | join_by_link | playing | round_result | final
   const [screen, setScreen] = useState('menu');
-  const [duelId, setDuelId] = useState(null);
-  const [code, setCode] = useState('');
+  const [room, setRoom] = useState(null);
   const [joinCode, setJoinCode] = useState('');
-  const [task, setTask] = useState('');
-  const [authorNick, setAuthorNick] = useState('');
-  const [opponentNick, setOpponentNick] = useState('');
+  const [nickname, setNickname] = useState(() => localStorage.getItem('nickname') || '');
+  const [maxPlayers, setMaxPlayers] = useState(2);
   const [answer, setAnswer] = useState('');
-  const [grade, setGrade] = useState(null);
-  const [comment, setComment] = useState('');
-  const [youWon, setYouWon] = useState(null);
-  const [authorGrade, setAuthorGrade] = useState(null);
-  const [opponentGrade, setOpponentGrade] = useState(null);
-  const [authorAnswer, setAuthorAnswer] = useState('');
-  const [opponentAnswer, setOpponentAnswer] = useState('');
+  const [lastGrade, setLastGrade] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [countdown, setCountdown] = useState(null);
 
   useEffect(() => {
     if (!userId) {
@@ -52,117 +43,119 @@ const ChallengePage = () => {
     }
   };
 
-  const startPolling = useCallback((id) => {
+  const startPolling = useCallback((roomId) => {
     stopPolling();
-    pollRef.current = setInterval(() => pollStatus(id), POLL_INTERVAL);
+    pollRef.current = setInterval(() => pollRoom(roomId), POLL_INTERVAL);
   }, []);
 
-  const pollStatus = async (id) => {
+  const updateRoom = (data) => {
+    if (data.status === 'success' || data.room_id) {
+      setRoom(data);
+      return true;
+    }
+    return false;
+  };
+
+  const pollRoom = async (roomId) => {
     try {
-      const data = await duelStatus(userId, id);
+      const data = await duel2Status(userId, roomId || room?.room_id);
       if (data.status === 'error') return;
+      updateRoom(data);
 
-      if (data.status === 'waiting') {
-        // Всё ещё ждём
-        return;
-      }
-
-      if (data.status === 'in_progress') {
-        // Соперник подключился, показываем задачу
-        if (screen === 'waiting') {
-          stopPolling();
-          // Нам нужна задача — но accept уже вернул задачу для соперника
-          // Для автора — мы знаем задачу из create
-          setOpponentNick(data.opponent_nick || '');
-          setScreen('task');
-          startPolling(id);
-        }
-        return;
-      }
-
-      if (data.status === 'finished') {
-        stopPolling();
-        setYouWon(data.you_won);
-        setAuthorGrade(data.author_grade);
-        setOpponentGrade(data.opponent_grade);
-        setAuthorAnswer(data.author_answer || '');
-        setOpponentAnswer(data.opponent_answer || '');
-        setAuthorNick(data.author_nick || '');
-        setOpponentNick(data.opponent_nick || '');
-        setScreen('result');
-        return;
+      // Авто-переключение экранов
+      if (data.room_status === 'playing' && screen === 'lobby') {
+        setScreen('playing');
       }
     } catch (e) {
       console.error('Poll error:', e);
     }
   };
 
-  // ── Создать дуэль ─────────────────────────────
+  // ── Создать комнату ──────────────────────────
   const handleCreate = async () => {
     setLoading(true);
     setError('');
+    if (nickname) localStorage.setItem('nickname', nickname);
     try {
-      const data = await duelCreate(userId);
+      const data = await duel2Create(userId, nickname, maxPlayers);
       if (data.status === 'error') {
         setError(data.message);
         setLoading(false);
         return;
       }
-      setDuelId(data.duel_id);
-      setCode(data.code);
-      setTask(data.task);
-      setScreen('waiting');
-      startPolling(data.duel_id);
+      updateRoom(data);
+      setScreen('lobby');
+      startPolling(data.room_id);
     } catch (e) {
-      setError('Ошибка при создании дуэли');
+      setError('Ошибка при создании комнаты');
     }
     setLoading(false);
   };
 
-  // ── Присоединиться по коду ────────────────────
+  // ── Войти по коду ────────────────────────────
   const handleJoin = async () => {
     if (!joinCode.trim()) return;
     setLoading(true);
     setError('');
+    if (nickname) localStorage.setItem('nickname', nickname);
     try {
-      const data = await duelAccept(userId, joinCode.trim());
+      const data = await duel2Accept(userId, joinCode.trim(), nickname);
       if (data.status === 'error') {
         setError(data.message);
         setLoading(false);
         return;
       }
-      setDuelId(data.duel_id);
-      setTask(data.task);
-      setAuthorNick(data.author_nick || 'Соперник');
-      setScreen('task');
+      updateRoom(data);
+      if (data.room_status === 'waiting') {
+        setScreen('lobby');
+        startPolling(data.room_id);
+      } else if (data.room_status === 'playing') {
+        setScreen('playing');
+        startPolling(data.room_id);
+      }
     } catch (e) {
       setError('Ошибка при подключении');
     }
     setLoading(false);
   };
 
-  // ── Ответить ──────────────────────────────────
-  const handleAnswer = async () => {
-    if (!answer.trim() || answer.trim().length < 3) return;
+  // ── Начать игру ──────────────────────────────
+  const handleStart = async () => {
     setLoading(true);
     setError('');
     try {
-      const data = await duelAnswer(userId, duelId, answer.trim());
+      const data = await duel2Start(userId);
       if (data.status === 'error') {
         setError(data.message);
         setLoading(false);
         return;
       }
-      if (data.status === 'evaluated') {
-        setGrade(data.grade);
-        setComment(data.comment || '');
-        setScreen('evaluating');
-        // Начинаем polling — ждём когда соперник тоже ответит
-        startPolling(duelId);
-      } else {
-        // LLM ещё думает
-        setScreen('evaluating');
-        setTimeout(() => pollStatus(duelId), 3000);
+      updateRoom(data);
+      setScreen('playing');
+    } catch (e) {
+      setError('Ошибка при старте');
+    }
+    setLoading(false);
+  };
+
+  // ── Ответить ─────────────────────────────────
+  const handleAnswer = async () => {
+    if (!answer.trim() || answer.trim().length < 3) return;
+    setLoading(true);
+    setError('');
+    try {
+      const data = await duel2Answer(userId, room.room_id, answer.trim());
+      if (data.status === 'error') {
+        setError(data.message);
+        setLoading(false);
+        return;
+      }
+      setLastGrade(data.grade);
+      updateRoom(data);
+
+      // Все ответили? Показываем результат раунда
+      if (data.current_round_data?.all_answered) {
+        setScreen('round_result');
       }
     } catch (e) {
       setError('Ошибка при отправке ответа');
@@ -170,37 +163,77 @@ const ChallengePage = () => {
     setLoading(false);
   };
 
-  // ── Реванш ────────────────────────────────────
-  const handleRematch = () => {
-    setScreen('menu');
-    setDuelId(null);
-    setCode('');
-    setJoinCode('');
-    setTask('');
-    setAnswer('');
-    setGrade(null);
-    setComment('');
-    setYouWon(null);
+  // ── Следующий раунд ──────────────────────────
+  const handleNextRound = async () => {
+    setLoading(true);
     setError('');
+    setAnswer('');
+    setLastGrade(null);
+    try {
+      const data = await duel2Next(userId, room.room_id);
+      if (data.status === 'error') {
+        setError(data.message);
+        setLoading(false);
+        return;
+      }
+      updateRoom(data);
+      setScreen('playing');
+    } catch (e) {
+      setError('Ошибка');
+    }
+    setLoading(false);
+  };
+
+  // ── Завершить игру ───────────────────────────
+  const handleFinish = async () => {
+    setLoading(true);
+    try {
+      const data = await duel2Finish(userId, room.room_id);
+      updateRoom(data);
+      setScreen('final');
+      stopPolling();
+    } catch (e) {
+      setError('Ошибка');
+    }
+    setLoading(false);
+  };
+
+  // ── В меню ───────────────────────────────────
+  const handleBackToMenu = () => {
+    stopPolling();
+    setRoom(null);
+    setAnswer('');
+    setLastGrade(null);
+    setError('');
+    setScreen('menu');
   };
 
   // ── Ссылка-приглашение ───────────────────────
   const getInviteLink = () => {
-    const base = window.location.origin;
-    return `${base}/duel?code=${code}`;
-  };
-
-  // ── Копировать код ───────────────────────────
-  const copyCode = () => {
-    navigator.clipboard.writeText(code);
+    if (!room?.code) return '';
+    return `${window.location.origin}/duel?code=${room.code}`;
   };
 
   const copyLink = () => {
     navigator.clipboard.writeText(getInviteLink());
   };
 
-  // ── Рендер экранов ───────────────────────────
+  const copyCode = () => {
+    navigator.clipboard.writeText(room?.code || '');
+  };
 
+  // Является ли создателем
+  const isCreator = room?.players?.find(p => p.is_creator)?.user_id === parseInt(userId) ||
+                    room?.players?.[0]?.user_id === parseInt(userId);
+
+  // Все ли ответили в текущем раунде
+  const currentRoundAnswers = room?.answers || [];
+  const allAnswered = room?.players && currentRoundAnswers.length >= room.players.length;
+  const hasAnswered = room?.answered;
+
+  // ── РЕНДЕР ───────────────────────────────────
+
+  // Меню
   if (screen === 'menu') {
     return (
       <div className="challenge-page">
@@ -215,11 +248,30 @@ const ChallengePage = () => {
         </div>
 
         <div className="challenge-menu">
+          <div className="nickname-field">
+            <label>Твой ник:</label>
+            <input
+              type="text"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder="Введи никнейм"
+              className="code-input"
+              maxLength={20}
+            />
+          </div>
+
           <div className="challenge-card">
             <div className="card-icon">🎯</div>
-            <h2>Создать дуэль</h2>
-            <p>Получи код и отправь другу</p>
-            <button className="challenge-btn primary" onClick={handleCreate} disabled={loading}>
+            <h2>Создать комнату</h2>
+            <div className="players-selector">
+              <label>Игроков:</label>
+              <select value={maxPlayers} onChange={(e) => setMaxPlayers(Number(e.target.value))}>
+                {[2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+            </div>
+            <button className="challenge-btn primary" onClick={handleCreate} disabled={loading || !nickname.trim()}>
               {loading ? 'Создание...' : 'Создать'}
             </button>
           </div>
@@ -229,7 +281,6 @@ const ChallengePage = () => {
           <div className="challenge-card">
             <div className="card-icon">🤝</div>
             <h2>Ввести код</h2>
-            <p>Друг дал тебе код? Введи его</p>
             <div className="join-form">
               <input
                 type="text"
@@ -240,7 +291,7 @@ const ChallengePage = () => {
                 maxLength={3}
                 disabled={loading}
               />
-              <button className="challenge-btn primary" onClick={handleJoin} disabled={loading || !joinCode.trim()}>
+              <button className="challenge-btn primary" onClick={handleJoin} disabled={loading || !joinCode.trim() || !nickname.trim()}>
                 Войти
               </button>
             </div>
@@ -252,113 +303,12 @@ const ChallengePage = () => {
     );
   }
 
-  if (screen === 'waiting') {
-    return (
-      <div className="challenge-page">
-        <div className="challenge-header">
-          <button className="header-button" onClick={handleRematch}>
-            ← Меню
-          </button>
-          <h1 className="challenge-title">⚔️ Ожидание</h1>
-          <div />
-        </div>
-        <div className="challenge-content">
-          <div className="waiting-card">
-            <h2>Отправь код другу:</h2>
-            <div className="big-code" onClick={copyCode}>
-              {code}
-            </div>
-            <p className="hint">Нажми на код чтобы скопировать</p>
-            <button className="challenge-btn secondary" onClick={copyLink}>
-              📋 Скопировать ссылку
-            </button>
-            <p className="hint">Или отправь ссылку: <a href={getInviteLink()} target="_blank" rel="noreferrer">{getInviteLink()}</a></p>
-            <div className="waiting-dots">
-              <span></span><span></span><span></span>
-            </div>
-            <p>Ожидание соперника...</p>
-          </div>
-          <div className="task-preview">
-            <h3>Твоя ситуация:</h3>
-            <p>{task}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (screen === 'task') {
-    return (
-      <div className="challenge-page">
-        <div className="challenge-header">
-          <button className="header-button" onClick={handleRematch}>
-            ← Меню
-          </button>
-          <h1 className="challenge-title">⚔️ Дуэль</h1>
-          <div />
-        </div>
-        <div className="challenge-content">
-          <div className="task-card">
-            <div className="task-label">Ситуация:</div>
-            <p className="task-text">{task}</p>
-            <div className="vs-badge">
-              <span>{authorNick || 'Игрок 1'}</span>
-              <span className="vs">vs</span>
-              <span>{opponentNick || 'Игрок 2'}</span>
-            </div>
-          </div>
-          <div className="answer-form">
-            <textarea
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              placeholder="Как ты выйдешь из ситуации?..."
-              className="answer-input"
-              rows={4}
-              disabled={loading}
-            />
-            <button className="challenge-btn primary" onClick={handleAnswer} disabled={loading || answer.trim().length < 3}>
-              {loading ? 'Оценка...' : 'Ответить ⚡'}
-            </button>
-          </div>
-          {error && <div className="challenge-error">{error}</div>}
-        </div>
-      </div>
-    );
-  }
-
-  if (screen === 'evaluating') {
-    return (
-      <div className="challenge-page">
-        <div className="challenge-header">
-          <button className="header-button" onClick={handleRematch}>
-            ← Меню
-          </button>
-          <h1 className="challenge-title">⚔️ Дуэль</h1>
-          <div />
-        </div>
-        <div className="challenge-content">
-          <div className="eval-card">
-            {grade !== null && (
-              <div className="your-grade">
-                <h3>Твоя оценка: {grade}/10</h3>
-                {comment && <p className="grade-comment">«{comment}»</p>}
-              </div>
-            )}
-            <div className="waiting-dots">
-              <span></span><span></span><span></span>
-            </div>
-            <p>Ждём ответ соперника...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  // Авто-подключение по ссылке
   if (screen === 'join_by_link') {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
-          <button className="header-button" onClick={() => setScreen('menu')}>
+          <button className="header-button" onClick={handleBackToMenu}>
             ← Меню
           </button>
           <h1 className="challenge-title">⚔️ Дуэль</h1>
@@ -369,7 +319,18 @@ const ChallengePage = () => {
             <div className="card-icon">🤝</div>
             <h2>Тебя вызывают на дуэль!</h2>
             <p>Код: <strong>{joinCode}</strong></p>
-            <button className="challenge-btn primary" onClick={handleJoin} disabled={loading}>
+            <div className="nickname-field">
+              <label>Твой ник:</label>
+              <input
+                type="text"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                placeholder="Введи никнейм"
+                className="code-input"
+                maxLength={20}
+              />
+            </div>
+            <button className="challenge-btn primary" onClick={handleJoin} disabled={loading || !nickname.trim()}>
               {loading ? 'Подключение...' : 'Принять вызов ⚡'}
             </button>
           </div>
@@ -379,36 +340,234 @@ const ChallengePage = () => {
     );
   }
 
-  if (screen === 'result') {
+  // Лобби — ожидание игроков
+  if (screen === 'lobby') {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
-          <button className="header-button" onClick={handleRematch}>
+          <button className="header-button" onClick={handleBackToMenu}>
             ← Меню
           </button>
-          <h1 className="challenge-title">⚔️ Результат</h1>
+          <h1 className="challenge-title">🏠 Лобби</h1>
+          <div />
+        </div>
+        <div className="challenge-content">
+          <div className="lobby-card">
+            <h2>Комната {room?.code}</h2>
+
+            <div className="invite-section">
+              <button className="challenge-btn secondary" onClick={copyCode}>
+                📋 Копировать код: <strong>{room?.code}</strong>
+              </button>
+              <button className="challenge-btn secondary" onClick={copyLink}>
+                🔗 Скопировать ссылку
+              </button>
+            </div>
+
+            <div className="players-list">
+              <h3>Игроки ({room?.players_count || 0}/{room?.max_players || 2}):</h3>
+              {room?.players?.map((p, i) => (
+                <div key={i} className="player-row">
+                  <span className="player-number">{i + 1}</span>
+                  <span className="player-name">{p.nickname || `Игрок ${i + 1}`}</span>
+                  {p.is_creator && <span className="creator-badge">👑</span>}
+                </div>
+              ))}
+            </div>
+
+            <div className="waiting-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <p>Ожидание игроков...</p>
+
+            {isCreator && room?.players_count >= 2 && (
+              <button className="challenge-btn primary" onClick={handleStart} disabled={loading}>
+                {loading ? 'Старт...' : '🚀 Начать игру'}
+              </button>
+            )}
+            {!isCreator && <p className="hint">Ждём, когда создатель начнёт игру</p>}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Игра — задача + ввод ответа
+  if (screen === 'playing') {
+    return (
+      <div className="challenge-page">
+        <div className="challenge-header">
+          <button className="header-button" onClick={handleBackToMenu}>
+            ← Выйти
+          </button>
+          <h1 className="challenge-title">⚔️ Раунд {room?.current_round}</h1>
+          <div />
+        </div>
+        <div className="challenge-content">
+          <div className="task-card">
+            <div className="task-label">Ситуация:</div>
+            <p className="task-text">{room?.task}</p>
+            <div className="scoreboard-mini">
+              {room?.players?.map((p, i) => (
+                <span key={i} className="score-chip">
+                  {p.nickname || `Игрок ${i + 1}`}: {p.total_score} очков
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {hasAnswered ? (
+            <div className="answer-sent">
+              <div className="your-grade">
+                <h3>Твой ответ отправлен! Оценка: {lastGrade}/10</h3>
+              </div>
+              <div className="waiting-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <p>Ждём остальных...</p>
+            </div>
+          ) : (
+            <div className="answer-form">
+              <textarea
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                placeholder="Как ты выйдешь из ситуации?..."
+                className="answer-input"
+                rows={4}
+                disabled={loading}
+              />
+              <button className="challenge-btn primary" onClick={handleAnswer} disabled={loading || answer.trim().length < 3}>
+                {loading ? 'Оценка...' : 'Ответить ⚡'}
+              </button>
+            </div>
+          )}
+
+          {/* Табло ответов раунда */}
+          {currentRoundAnswers.length > 0 && (
+            <div className="round-scoreboard">
+              <h3>Раунд {room?.current_round}:</h3>
+              {currentRoundAnswers.map((a, i) => (
+                <div key={i} className="answer-row">
+                  <span className="answer-name">{a.nickname}</span>
+                  <span className="answer-text">«{a.answer}»</span>
+                  <span className="answer-grade">{a.grade}/10</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {error && <div className="challenge-error">{error}</div>}
+        </div>
+      </div>
+    );
+  }
+
+  // Результат раунда
+  if (screen === 'round_result') {
+    const sorted = [...(room?.players || [])].sort((a, b) => b.total_score - a.total_score);
+    return (
+      <div className="challenge-page">
+        <div className="challenge-header">
+          <button className="header-button" onClick={handleBackToMenu}>
+            ← Выйти
+          </button>
+          <h1 className="challenge-title">📊 Раунд {room?.current_round}</h1>
           <div />
         </div>
         <div className="challenge-content">
           <div className="result-card">
-            <div className={`result-banner ${youWon ? 'win' : 'lose'}`}>
-              {youWon ? '🏆 Победа!' : '😢 Поражение'}
+            <h2>Результаты раунда</h2>
+            <div className="round-answers">
+              {currentRoundAnswers.map((a, i) => (
+                <div key={i} className="answer-row detailed">
+                  <span className="answer-name">{a.nickname}</span>
+                  <span className="answer-text">«{a.answer}»</span>
+                  <span className="answer-grade">{a.grade}/10</span>
+                  {a.comment && <span className="answer-comment">{a.comment}</span>}
+                </div>
+              ))}
             </div>
-            <div className="result-scores">
-              <div className={`result-player ${youWon ? 'winner' : ''}`}>
-                <div className="player-name">{authorNick}</div>
-                <div className="player-grade">{authorGrade}/10</div>
-                <div className="player-answer">«{authorAnswer}»</div>
-              </div>
-              <div className="result-vs">vs</div>
-              <div className={`result-player ${!youWon ? 'winner' : ''}`}>
-                <div className="player-name">{opponentNick}</div>
-                <div className="player-grade">{opponentGrade}/10</div>
-                <div className="player-answer">«{opponentAnswer}»</div>
-              </div>
+
+            <h3>Общий счёт:</h3>
+            <div className="total-scoreboard">
+              {sorted.map((p, i) => (
+                <div key={i} className={`score-row ${i === 0 ? 'first' : ''}`}>
+                  <span className="score-place">{i + 1}.</span>
+                  <span className="score-name">{p.nickname}</span>
+                  <span className="score-total">{p.total_score} очков</span>
+                </div>
+              ))}
             </div>
-            <button className="challenge-btn primary" onClick={handleRematch}>
-              Реванш ⚡
+
+            <div className="result-actions">
+              {isCreator && (
+                <>
+                  <button className="challenge-btn primary" onClick={handleNextRound} disabled={loading}>
+                    Следующий вопрос ⚡
+                  </button>
+                  <button className="challenge-btn secondary" onClick={handleFinish} disabled={loading}>
+                    Завершить игру
+                  </button>
+                </>
+              )}
+              {!isCreator && <p className="hint">Создатель решает: продолжить или закончить</p>}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Финальный результат
+  if (screen === 'final') {
+    const sorted = [...(room?.players || [])].sort((a, b) => b.total_score - a.total_score);
+    const winner = sorted[0];
+    return (
+      <div className="challenge-page">
+        <div className="challenge-header">
+          <button className="header-button" onClick={handleBackToMenu}>
+            ← Меню
+          </button>
+          <h1 className="challenge-title">🏆 Итоги</h1>
+          <div />
+        </div>
+        <div className="challenge-content">
+          <div className="result-card final">
+            <div className="result-banner win">
+              🏆 Победитель: {winner?.nickname || '—'} ({winner?.total_score} очков)
+            </div>
+
+            <div className="final-scoreboard">
+              {sorted.map((p, i) => (
+                <div key={i} className={`score-row ${i === 0 ? 'first' : ''}`}>
+                  <span className="score-place">
+                    {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`}
+                  </span>
+                  <span className="score-name">{p.nickname}</span>
+                  <span className="score-total">{p.total_score} очков</span>
+                </div>
+              ))}
+            </div>
+
+            {/* История раундов */}
+            {room?.rounds?.length > 0 && (
+              <div className="rounds-history">
+                <h3>История раундов:</h3>
+                {room.rounds.map((r) => (
+                  <div key={r.round_number} className="history-round">
+                    <div className="history-round-header">Раунд {r.round_number}</div>
+                    {r.answers?.map((a, i) => (
+                      <div key={i} className="history-answer">
+                        <span>{a.nickname}: «{a.answer}» → {a.grade}/10</span>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <button className="challenge-btn primary" onClick={handleBackToMenu}>
+              Новая игра ⚡
             </button>
           </div>
         </div>
