@@ -291,7 +291,7 @@
   padding: 30px;
   max-width: 500px;
   width: 100%;
-  text-align: center;
+  text-align: left;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
@@ -495,6 +495,54 @@
   font-weight: 600;
 }
 
+.players-status {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 20px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.players-status h3 {
+  color: #667eea;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+
+.player-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 0.95rem;
+}
+
+.player-status .status-name {
+  font-weight: 600;
+}
+
+.player-status .status-label {
+  margin-left: auto;
+  font-size: 0.85rem;
+}
+
+.player-status.done {
+  color: #4caf50;
+}
+
+.player-status.done .status-label {
+  color: #4caf50;
+}
+
+.player-status.waiting {
+  color: #999;
+}
+
+.player-status.waiting .status-label {
+  color: #999;
+}
+
 /* ── Answer sent ─────────────────────── */
 .answer-sent {
   background: rgba(255, 255, 255, 0.95);
@@ -521,42 +569,59 @@
   margin-bottom: 10px;
 }
 
-.answer-row {
+.answer-card {
+  background: #f8f9ff;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+
+.answer-card-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid #f0f0f0;
+  justify-content: space-between;
+  margin-bottom: 8px;
 }
 
-.answer-row.detailed {
-  flex-wrap: wrap;
-}
-
-.answer-name {
-  font-weight: 600;
+.answer-card .answer-name {
+  font-weight: 700;
   color: #333;
-  min-width: 80px;
 }
 
-.answer-text {
-  color: #666;
-  flex: 1;
-  font-size: 0.9rem;
+.answer-grade-badge {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.85rem;
 }
 
-.answer-grade {
-  font-weight: 800;
-  color: #667eea;
-  min-width: 40px;
-  text-align: right;
+.answer-card .answer-text {
+  color: #444;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0;
 }
 
-.answer-comment {
-  width: 100%;
+.answer-card .answer-comment {
   color: #888;
   font-size: 0.85rem;
   font-style: italic;
+  margin: 8px 0 0;
+}
+
+.answer-comment-block {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #fff3e0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.4;
 }
 
 /* ── Total scoreboard ────────────────── */

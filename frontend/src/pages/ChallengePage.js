@@ -400,18 +400,19 @@ const ChallengePage = () => {
               </button>
             </div>
           )}
-          {currentRoundAnswers.length > 0 && (
-            <div className="round-scoreboard">
-              <h3>Раунд {room?.current_round}:</h3>
-              {currentRoundAnswers.map((a, i) => (
-                <div key={i} className="answer-row">
-                  <span className="answer-name">{a.nickname}</span>
-                  <span className="answer-text">«{a.answer}»</span>
-                  <span className="answer-grade">{a.grade}/10</span>
+          <div className="players-status">
+            <h3>Игроки:</h3>
+            {room?.players?.map((p, i) => {
+              const done = currentRoundAnswers.some(a => a.nickname === p.nickname) || (hasAnswered && p.chat_id === userId);
+              return (
+                <div key={i} className={`player-status ${done ? 'done' : 'waiting'}`}>
+                  <span className="status-icon">{done ? '✅' : '⏳'}</span>
+                  <span className="status-name">{p.nickname || `Игрок ${i+1}`}</span>
+                  <span className="status-label">{done ? 'прислал ответ' : 'ожидание ответа'}</span>
                 </div>
-              ))}
-            </div>
-          )}
+              );
+            })}
+          </div>
           {error && <div className="challenge-error">{error}</div>}
         </div>
       </div>
@@ -432,21 +433,28 @@ const ChallengePage = () => {
             <h2>Результаты раунда</h2>
             <div className="round-answers">
               {currentRoundAnswers.map((a, i) => (
-                <div key={i} className="answer-row detailed">
-                  <span className="answer-name">{a.nickname}</span>
-                  <span className="answer-text">«{a.answer}»</span>
-                  <span className="answer-grade">{a.grade}/10</span>
-                  {a.comment && <span className="answer-comment">{a.comment}</span>}
+                <div key={i} className="answer-card">
+                  <div className="answer-card-header">
+                    <span className="answer-name">{a.nickname}</span>
+                    <span className="answer-grade-badge">{a.grade}/10</span>
+                  </div>
+                  <p className="answer-text">«{a.answer}»</p>
+                  {a.comment && (
+                    <div className="answer-comment-block">
+                      <span>💬</span>
+                      <span>{a.comment}</span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
-            <h3>Общий счёт:</h3>
+            <h3>Общий счёт</h3>
             <div className="total-scoreboard">
               {sorted.map((p, i) => (
                 <div key={i} className={`score-row ${i === 0 ? 'first' : ''}`}>
-                  <span className="score-place">{i+1}.</span>
+                  <span className="score-place">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`}</span>
                   <span className="score-name">{p.nickname}</span>
-                  <span className="score-total">{p.total_score} очков</span>
+                  <span className="score-total">{p.total_score}</span>
                 </div>
               ))}
             </div>
