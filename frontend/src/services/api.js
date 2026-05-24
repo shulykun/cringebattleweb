@@ -103,6 +103,11 @@ export const duel2Finish = async (userId, roomId) => {
   return response.data;
 };
 
+export const duel2Rematch = async (userId, roomId, nickname, maxPlayers) => {
+  const response = await api.post('/duel2/rematch', { user_id: userId, room_id: roomId, nickname, max_players: maxPlayers });
+  return response.data;
+};
+
 export const duel2Message = async (userId, roomId, text) => {
   const response = await api.post('/duel2/message', { user_id: userId, room_id: roomId, text });
   return response.data;

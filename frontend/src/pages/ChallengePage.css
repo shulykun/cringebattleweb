@@ -44,6 +44,31 @@
   background: rgba(255, 255, 255, 0.15);
   color: #fff;
 }
+.header-button.leave-btn {
+  color: rgba(245, 87, 108, 0.8);
+  border-color: rgba(245, 87, 108, 0.2);
+}
+.header-button.leave-btn:hover {
+  background: rgba(245, 87, 108, 0.15);
+  color: #f5576c;
+}
+
+.leave-duel-btn {
+  background: none;
+  border: 1px solid rgba(245, 87, 108, 0.2);
+  color: rgba(245, 87, 108, 0.5);
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.15s;
+}
+.leave-duel-btn:hover {
+  background: rgba(245, 87, 108, 0.1);
+  color: #f5576c;
+  border-color: rgba(245, 87, 108, 0.4);
+}
 
 /* ── Menu ─────────────────────────────── */
 .challenge-menu {
@@ -511,58 +536,48 @@
 .player-status.waiting { color: rgba(255, 255, 255, 0.35); }
 .player-status.waiting .status-label { color: rgba(255, 255, 255, 0.35); }
 
-/* ── Round scoreboard ─────────────────── */
-.round-scoreboard { max-width: 500px; }
-.round-scoreboard h3 { color: #a78bfa; margin-bottom: 10px; }
-.round-answers { margin: 14px 0; }
-
-.answer-card {
+/* ── Answer results ─────────────────── */
+.answer-result {
+  padding: 16px 18px;
+  margin-bottom: 12px;
   background: rgba(255, 255, 255, 0.04);
-  border-radius: 12px;
-  padding: 14px 16px;
-  margin-bottom: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
 }
-.answer-card-header {
+.answer-result.winner {
+  background: rgba(167, 139, 250, 0.1);
+  border-color: rgba(167, 139, 250, 0.25);
+}
+.answer-result-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 10px;
   margin-bottom: 8px;
 }
-.answer-card .answer-name {
+.answer-result-place {
+  font-size: 1.2rem;
+}
+.answer-result-name {
   font-weight: 700;
   color: rgba(255, 255, 255, 0.85);
+  flex: 1;
 }
-.answer-grade-badge {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  padding: 3px 10px;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 0.85rem;
+.answer-result-grade {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #a78bfa;
 }
-.answer-card .answer-text {
-  color: rgba(255, 255, 255, 0.7);
+.answer-result-text {
+  color: rgba(255, 255, 255, 0.65);
   font-size: 0.95rem;
   line-height: 1.5;
   margin: 0;
+  font-style: italic;
 }
-.answer-card .answer-comment {
+.answer-result-comment {
   color: rgba(255, 255, 255, 0.4);
   font-size: 0.85rem;
-  font-style: italic;
   margin: 8px 0 0;
-}
-.answer-comment-block {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  background: rgba(255, 193, 7, 0.08);
-  border-radius: 8px;
-  padding: 8px 12px;
-  margin-top: 10px;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.65);
-  line-height: 1.4;
 }
 
 /* ── Total scoreboard ─────────────────── */

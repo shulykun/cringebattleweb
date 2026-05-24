@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { duel2Create, duel2Accept, duel2Start, duel2Answer, duel2Next, duel2Finish, duel2Message, duel2Status } from '../services/api';
+import { duel2Create, duel2Accept, duel2Start, duel2Answer, duel2Next, duel2Finish, duel2Message, duel2Status, duel2Rematch } from '../services/api';
 import './ChallengePage.css';
 
 const POLL_INTERVAL = 3000;
@@ -14,6 +14,7 @@ const ChallengePage = () => {
   const screenRef = useRef('menu');
 
   const [screen, _setScreen] = useState('menu');
+  const [restoring, setRestoring] = useState(false);
   const [room, setRoom] = useState(null);
   const [roomId, setRoomId] = useState(() => localStorage.getItem('duelRoomId') || '');
   const [joinCode, setJoinCode] = useState('');
@@ -37,21 +38,42 @@ const ChallengePage = () => {
     _setScreen(s);
   };
 
-  const saveRoomId = (id) => {
+  const saveRoomId = (id, code) => {
     setRoomId(String(id));
     localStorage.setItem('duelRoomId', String(id));
+    if (code) localStorage.setItem('duelRoomCode', code);
   };
 
   const clearRoomId = () => {
     setRoomId('');
     localStorage.removeItem('duelRoomId');
+    localStorage.removeItem('duelRoomCode');
   };
 
   useEffect(() => {
     const codeFromUrl = searchParams.get('code');
     // Если есть сохранённая комната — сначала восстановить
     if (roomId) {
-      restoreRoom(roomId);
+      setRestoring(true);
+      restoreRoom(roomId).then(() => setRestoring(false)).catch(() => {
+        // Если не получилось по roomId — попробовать по коду
+        const savedCode = localStorage.getItem('duelRoomCode');
+        if (savedCode) {
+          setJoinCode(savedCode);
+          setScreen('join_by_link');
+          fetch(`/api/duel2/info/${savedCode}`)
+            .then(r => r.json())
+            .then(d => {
+              if (d.creator_nickname) setCreatorNick(d.creator_nickname);
+              if (d.status === 'error') { clearRoomId(); setRestoring(false); }
+              else setRestoring(false);
+            })
+            .catch(() => { clearRoomId(); setRestoring(false); });
+        } else {
+          clearRoomId();
+          setRestoring(false);
+        }
+      });
       return;
     }
     // Если есть код из ссылки — экран ввода ника
@@ -175,7 +197,7 @@ const ChallengePage = () => {
     try {
       const data = await duel2Create(userId, nickname, maxPlayers);
       if (data.status === 'error') { setError(data.message); setLoading(false); return; }
-      updateRoom(data); saveRoomId(data.room_id);
+      updateRoom(data); saveRoomId(data.room_id, data.code);
       setScreen('lobby'); startPolling(data.room_id);
     } catch (e) { setError('Ошибка при создании комнаты'); }
     setLoading(false);
@@ -207,7 +229,7 @@ const ChallengePage = () => {
       }
       const data = await duel2Accept(uid, joinCode.trim(), nickname);
       if (data.status === 'error') { setError(data.message); setLoading(false); return; }
-      updateRoom(data); saveRoomId(data.room_id);
+      updateRoom(data); saveRoomId(data.room_id, data.code);
       if (data.room_status === 'waiting') { setScreen('lobby'); startPolling(data.room_id); }
       else if (data.room_status === 'playing') { setScreen('playing'); startPolling(data.room_id); }
     } catch (e) { setError('Ошибка при подключении'); }
@@ -262,7 +284,15 @@ const ChallengePage = () => {
   // ── В меню ───────────────────────────────────
   const handleBackToMenu = () => {
     stopPolling(); setRoom(null); setAnswer(''); setLastGrade(null); setError('');
-    clearRoomId(); setScreen('menu');
+    if (room?.room_status === 'finished') clearRoomId();
+    setScreen('menu');
+  };
+
+  const handleLeaveDuel = () => {
+    if (window.confirm('Выйти из дуэли?')) {
+      stopPolling(); setRoom(null); setAnswer(''); setLastGrade(null); setError('');
+      clearRoomId(); setScreen('menu');
+    }
   };
 
   // ── Ссылка-приглашение ───────────────────────
@@ -355,6 +385,16 @@ const ChallengePage = () => {
     </button>
   );
 
+  if (restoring) {
+    return (
+      <div className="challenge-page">
+        <div className="challenge-content" style={{alignItems:'center',justifyContent:'center',flex:1}}>
+          <div className="waiting-dots"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+    );
+  }
+
   if (screen === 'menu') {
     return (
       <div className="challenge-page">
@@ -363,9 +403,11 @@ const ChallengePage = () => {
           <span className="header-nick">{localStorage.getItem("username") || ""}</span>
           <button className="header-button" onClick={() => {
             const yid = localStorage.getItem('yandexId') || '';
-            if (!yid || yid.startsWith('guest_') || yid.startsWith('pseudo_')) navigate('/login');
+            const uid = localStorage.getItem('userId') || '';
+            const isPseudo = !yid || yid.startsWith('guest_') || yid.startsWith('pseudo_') || uid.startsWith('web_');
+            if (isPseudo) navigate('/login');
             else navigate('/profile');
-          }}>{(() => { const yid = localStorage.getItem('yandexId') || ''; return (!yid || yid.startsWith('guest_') || yid.startsWith('pseudo_')) ? 'Войти' : '👤'; })()}</button>
+          }}>{(() => { const yid = localStorage.getItem('yandexId') || ''; const uid = localStorage.getItem('userId') || ''; return (!yid || yid.startsWith('guest_') || yid.startsWith('pseudo_') || uid.startsWith('web_')) ? 'Войти' : '👤'; })()}</button>
         </div>
         <div className="challenge-menu">
           {isYandexUser ? (
@@ -478,6 +520,7 @@ const ChallengePage = () => {
             )}
             {error && <div className="challenge-error">{error}</div>}
           </div>
+          <button className="leave-duel-btn" onClick={handleLeaveDuel}>Выйти из дуэли</button>
         </div>
       {chatOverlay}
       </div>
@@ -536,6 +579,7 @@ const ChallengePage = () => {
             )}
             {!isCreator && <p className="hint">Ждём, когда создатель начнёт игру</p>}
           </div>
+          <button className="leave-duel-btn" onClick={handleLeaveDuel}>Выйти из дуэли</button>
         </div>
       {chatOverlay}
       </div>
@@ -589,6 +633,7 @@ const ChallengePage = () => {
             })}
           </div>
           {error && <div className="challenge-error">{error}</div>}
+          <button className="leave-duel-btn" onClick={handleLeaveDuel}>Выйти из дуэли</button>
         </div>
       {chatOverlay}
       </div>
@@ -606,24 +651,18 @@ const ChallengePage = () => {
         </div>
         <div className="challenge-content">
           <div className="result-card">
-            <h2>Результаты раунда</h2>
-            <div className="round-answers">
-              {[...currentRoundAnswers].sort((a, b) => b.grade - a.grade).map((a, i) => (
-                <div key={i} className="answer-card">
-                  <div className="answer-card-header">
-                    <span className="answer-name">{a.nickname}</span>
-                    <span className="answer-grade-badge">{a.grade}/10</span>
-                  </div>
-                  <p className="answer-text">«{a.answer}»</p>
-                  {a.comment && (
-                    <div className="answer-comment-block">
-                      <span>💬</span>
-                      <span>{a.comment}</span>
-                    </div>
-                  )}
+            <h2 style={{marginBottom: '24px', marginTop: '8px'}}>Результаты раунда</h2>
+            {[...currentRoundAnswers].sort((a, b) => b.grade - a.grade).map((a, i) => (
+              <div key={i} className={`answer-result ${i === 0 ? 'winner' : ''}`}>
+                <div className="answer-result-header">
+                  <span className="answer-result-place">{i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'}</span>
+                  <span className="answer-result-name">{a.nickname}</span>
+                  <span className="answer-result-grade">{a.grade}/10</span>
                 </div>
-              ))}
-            </div>
+                <p className="answer-result-text">«{a.answer}»</p>
+                {a.comment && <p className="answer-result-comment">💬 {a.comment}</p>}
+              </div>
+            ))}
             <h3>Общий счёт</h3>
             <div className="total-scoreboard">
               {sorted.map((p, i) => (
@@ -640,12 +679,12 @@ const ChallengePage = () => {
                     Следующий вопрос ⚡
                   </button>
               )}
-              {isCreator && room?.current_round >= 3 && (
+              {room?.current_round >= 3 && (
                   <button className="challenge-btn primary" onClick={handleNextRound} disabled={loading}>
                     Итоги ⚡
                   </button>
               )}
-              {!isCreator && <p className="hint">Создатель решает: продолжить или закончить</p>}
+              {!isCreator && room?.current_round < 3 && <p className="hint">Создатель решает: продолжить или закончить</p>}
             </div>
           </div>
         </div>
@@ -667,7 +706,10 @@ const ChallengePage = () => {
         <div className="challenge-content">
           <div className="result-card final">
             <div className="result-banner win">
-              🏆 {winner?.nickname || '—'} победил({winner?.wins > 1 ? 'и' : 'а'}) в {winner?.wins} из 3 раундов!
+              {sorted.length > 1 && sorted[0]?.wins === sorted[1]?.wins
+                ? `🤝 Ничья! Оба с ${sorted[0]?.wins || 0} победами`
+                : `🏆 ${winner?.nickname || '—'} победил(${winner?.wins > 1 ? 'и' : 'а'}) в ${winner?.wins} из 3 раундов!`
+              }
             </div>
             <div className="final-scoreboard">
               {sorted.map((p, i) => (
@@ -695,7 +737,33 @@ const ChallengePage = () => {
                 ))}
               </div>
             )}
-            <button className="challenge-btn primary" onClick={handleBackToMenu}>Новая игра ⚡</button>
+            <button className="challenge-btn primary" onClick={handleBackToMenu}>Меню ⚡</button>
+            {isCreator && !room?.rematch_code && (
+              <button className="challenge-btn duel" onClick={async () => {
+                const nick = localStorage.getItem('username') || localStorage.getItem('nickname') || nickname;
+                if (!nick) { handleBackToMenu(); return; }
+                setLoading(true);
+                try {
+                  const data = await duel2Rematch(userId, room.room_id, nick, maxPlayers);
+                  if (data.status === 'error') { setError(data.message); setLoading(false); return; }
+                  clearRoomId();
+                  updateRoom(data); saveRoomId(data.room_id, data.code);
+                  setScreen('lobby'); startPolling(data.room_id);
+                } catch (e) { setError('Ошибка'); }
+                setLoading(false);
+              }} disabled={loading} style={{marginTop: '10px'}}>
+                Пригласить на новую дуэль ⚔️
+              </button>
+            )}
+            {room?.rematch_code && (
+              <div style={{marginTop: '16px', textAlign: 'center'}}>
+                <p style={{color:'rgba(255,255,255,0.5)',fontSize:'0.85rem',marginBottom:'8px'}}>Создатель бросил вызов!</p>
+                <a href={`${window.location.origin}/duel?code=${room.rematch_code}`}
+                   style={{color:'#a78bfa',fontWeight:600,fontSize:'1.1rem'}}>
+                  Присоединиться к реваншу ⚔️
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -12,9 +12,11 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Уже авторизован — на главную
+    // Уже авторизован через Яндекс — на главную
     const userId = localStorage.getItem('userId');
-    if (userId) {
+    const yid = localStorage.getItem('yandexId') || '';
+    const isPseudo = !yid || yid.startsWith('guest_') || yid.startsWith('pseudo_') || (userId || '').startsWith('web_');
+    if (userId && !isPseudo) {
       navigate('/');
       return;
     }

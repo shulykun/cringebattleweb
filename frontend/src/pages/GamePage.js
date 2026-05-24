@@ -164,9 +164,11 @@ const GamePage = () => {
         <span className="header-nick">{localStorage.getItem('username') || ''}</span>
         <button className="header-button" onClick={() => {
           const yid = localStorage.getItem('yandexId') || '';
-          if (!yid || yid.startsWith('guest_') || yid.startsWith('pseudo_')) navigate('/login');
+          const uid = localStorage.getItem('userId') || '';
+          const isPseudo = !yid || yid.startsWith('guest_') || yid.startsWith('pseudo_') || uid.startsWith('web_');
+          if (isPseudo) navigate('/login');
           else navigate('/profile');
-        }}>{(() => { const yid = localStorage.getItem('yandexId') || ''; return (!yid || yid.startsWith('guest_') || yid.startsWith('pseudo_')) ? 'Войти' : '👤'; })()}</button>
+        }}>{(() => { const yid = localStorage.getItem('yandexId') || ''; const uid = localStorage.getItem('userId') || ''; return (!yid || yid.startsWith('guest_') || yid.startsWith('pseudo_') || uid.startsWith('web_')) ? 'Войти' : '👤'; })()}</button>
       </div>
 
       <div className="game-content">
