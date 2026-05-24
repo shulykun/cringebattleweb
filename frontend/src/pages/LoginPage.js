@@ -4,7 +4,7 @@ import { authWithYandex } from '../services/api';
 import './LoginPage.css';
 
 const YANDEX_OAUTH_URL = 'https://oauth.yandex.ru/authorize';
-const YANDEX_CLIENT_ID = process.env.REACT_APP_YANDEX_CLIENT_ID || 'YOUR_CLIENT_ID';
+const YANDEX_CLIENT_ID = process.env.REACT_APP_YANDEX_CLIENT_ID || '99cba34d48204d18a6f5ed537ba0f693';
 
 const LoginPage = () => {
   const [loading, setLoading] = useState(false);
@@ -41,10 +41,11 @@ const LoginPage = () => {
         localStorage.setItem('userId', authResponse.user_id);
         localStorage.setItem('username', authResponse.username || '');
         localStorage.setItem('email', authResponse.email || '');
+        localStorage.setItem('yandexId', authResponse.yandex_id || '');
         
         // Очищаем URL от параметров
         window.history.replaceState({}, document.title, '/login');
-        navigate('/game');
+        navigate('/');
       } else {
         setError(authResponse.error || 'Ошибка авторизации');
       }
@@ -64,11 +65,33 @@ const LoginPage = () => {
     window.location.href = yandexAuthUrl;
   };
 
-  const handleTestLogin = () => {
-    const testId = 'test_' + Math.random().toString(36).substring(2, 8);
-    localStorage.setItem('userId', testId);
-    localStorage.setItem('username', 'TestPlayer');
-    navigate('/duel');
+  const [testNick, setTestNick] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
+
+  const handleTestLogin = async () => {
+    const nick = testNick.trim() || ('Player_' + Math.random().toString(36).substring(2, 6));
+    setLoginLoading(true);
+    try {
+      const res = await fetch('/api/auth/pseudo-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nickname: nick })
+      });
+      const data = await res.json();
+      if (data.status === 'ok') {
+        localStorage.setItem('userId', data.user_id);
+        localStorage.setItem('username', data.nickname);
+        navigate('/');
+      }
+    } catch (e) {
+      console.error('Login error:', e);
+      // Fallback
+      const testId = 'test_' + Math.random().toString(36).substring(2, 8);
+      localStorage.setItem('userId', testId);
+      localStorage.setItem('username', nick);
+      navigate('/duel');
+    }
+    setLoginLoading(false);
   };
 
   return (
@@ -111,13 +134,27 @@ const LoginPage = () => {
           ← На главную
         </button>
 
-        <button
-          className="login-back-button"
-          onClick={handleTestLogin}
-          style={{marginTop: '10px', color: '#888'}}
-        >
-          🧪 Тестовый вход (без Яндекс)
-        </button>
+        <div className="test-login-block">
+          <p className="login-subtitle" style={{marginTop: '20px'}}>Или введи ник для быстрого входа:</p>
+          <div style={{display: 'flex', gap: '10px', marginTop: '10px'}}>
+            <input
+              type="text"
+              value={testNick}
+              onChange={(e) => setTestNick(e.target.value)}
+              placeholder="Твой ник..."
+              className="login-input"
+              style={{flex: 1}}
+            />
+            <button
+              className="login-back-button"
+              onClick={handleTestLogin}
+              disabled={loginLoading}
+              style={{color: '#667eea', whiteSpace: 'nowrap'}}
+            >
+              {loginLoading ? '...' : '⚡ Войти'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

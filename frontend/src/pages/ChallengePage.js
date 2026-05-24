@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { duel2Create, duel2Accept, duel2Start, duel2Answer, duel2Next, duel2Finish, duel2Status } from '../services/api';
+import { duel2Create, duel2Accept, duel2Start, duel2Answer, duel2Next, duel2Finish, duel2Message, duel2Status } from '../services/api';
 import './ChallengePage.css';
 
 const POLL_INTERVAL = 3000;
 
 const ChallengePage = () => {
   const [userId] = useState(() => localStorage.getItem('userId') || '');
+  const isYandexUser = localStorage.getItem('yandexId') && !localStorage.getItem('yandexId').startsWith('guest_') && !localStorage.getItem('yandexId').startsWith('pseudo_');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const pollRef = useRef(null);
@@ -16,12 +17,15 @@ const ChallengePage = () => {
   const [room, setRoom] = useState(null);
   const [roomId, setRoomId] = useState(() => localStorage.getItem('duelRoomId') || '');
   const [joinCode, setJoinCode] = useState('');
-  const [nickname, setNickname] = useState(() => localStorage.getItem('nickname') || '');
+  const [nickname, setNickname] = useState(() => localStorage.getItem('username') || localStorage.getItem('nickname') || '');
   const [maxPlayers, setMaxPlayers] = useState(2);
   const [answer, setAnswer] = useState('');
   const [lastGrade, setLastGrade] = useState(null);
   const [linkCopied, setLinkCopied] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const [chatText, setChatText] = useState('');
+  const [lastSeenMsgId, setLastSeenMsgId] = useState(() => parseInt(localStorage.getItem('lastSeenMsgId') || '0'));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -42,10 +46,18 @@ const ChallengePage = () => {
 
   useEffect(() => {
     if (!userId) {
+      // Сохраняем код из URL перед уходом на логин
+      const codeFromUrl = searchParams.get('code');
+      if (codeFromUrl) {
+        localStorage.setItem('pendingDuelCode', codeFromUrl);
+      }
       navigate('/login');
       return;
     }
-    const codeFromUrl = searchParams.get('code');
+    // Восстанавливаем код после логина
+    const pendingCode = localStorage.getItem('pendingDuelCode');
+    const codeFromUrl = searchParams.get('code') || pendingCode;
+    if (pendingCode) localStorage.removeItem('pendingDuelCode');
     if (codeFromUrl) {
       setJoinCode(codeFromUrl);
       setScreen('join_by_link');
@@ -68,6 +80,28 @@ const ChallengePage = () => {
     stopPolling();
     pollRef.current = setInterval(() => pollRoom(id), POLL_INTERVAL);
   }, []);
+
+  const handleSendMessage = async () => {
+    if (!chatText.trim() || !roomId) return;
+    try {
+      await duel2Message(userId, roomId, chatText.trim());
+      setChatText('');
+    } catch (e) {
+      console.error('Message error:', e);
+    }
+  };
+
+  const unreadCount = (room?.messages || []).filter(m => m.id > lastSeenMsgId && m.nickname !== (localStorage.getItem('username') || '')).length;
+
+  const closeChat = () => {
+    setShowChat(false);
+    const msgs = room?.messages || [];
+    if (msgs.length) {
+      const lastId = msgs[msgs.length - 1].id;
+      setLastSeenMsgId(lastId);
+      localStorage.setItem('lastSeenMsgId', String(lastId));
+    }
+  };
 
   const updateRoom = (data) => {
     if (data.status === 'success' || data.room_id) {
@@ -131,7 +165,7 @@ const ChallengePage = () => {
   // ── Создать комнату ──────────────────────────
   const handleCreate = async () => {
     setLoading(true); setError('');
-    if (nickname) localStorage.setItem('nickname', nickname);
+    if (nickname) { localStorage.setItem('nickname', nickname); localStorage.setItem('username', nickname); }
     try {
       const data = await duel2Create(userId, nickname, maxPlayers);
       if (data.status === 'error') { setError(data.message); setLoading(false); return; }
@@ -145,7 +179,7 @@ const ChallengePage = () => {
   const handleJoin = async () => {
     if (!joinCode.trim()) return;
     setLoading(true); setError('');
-    if (nickname) localStorage.setItem('nickname', nickname);
+    if (nickname) { localStorage.setItem('nickname', nickname); localStorage.setItem('username', nickname); }
     try {
       const data = await duel2Accept(userId, joinCode.trim(), nickname);
       if (data.status === 'error') { setError(data.message); setLoading(false); return; }
@@ -160,7 +194,7 @@ const ChallengePage = () => {
   const handleStart = async () => {
     setLoading(true); setError('');
     try {
-      const data = await duel2Start(userId);
+      const data = await duel2Start(userId, room.room_id);
       if (data.status === 'error') { setError(data.message); setLoading(false); return; }
       updateRoom(data); setScreen('playing');
     } catch (e) { setError('Ошибка при старте'); }
@@ -214,14 +248,28 @@ const ChallengePage = () => {
   };
 
   const copyToClipboard = (text) => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(text);
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).catch(() => {
+        fallbackCopy(text);
+      });
     } else {
-      const ta = document.createElement('textarea');
-      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-      document.body.appendChild(ta); ta.select();
-      document.execCommand('copy'); document.body.removeChild(ta);
+      fallbackCopy(text);
     }
+  };
+
+  const fallbackCopy = (text) => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.top = '0';
+    ta.style.left = '0';
+    ta.style.opacity = '0';
+    ta.style.pointerEvents = 'none';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try { document.execCommand('copy'); } catch(e) { console.error('Copy failed:', e); }
+    document.body.removeChild(ta);
   };
 
   const copyLink = () => {
@@ -235,12 +283,53 @@ const ChallengePage = () => {
     setTimeout(() => setCodeCopied(false), 2000);
   };
 
-  const isCreator = room?.players?.some(p => p.is_creator && p.chat_id === userId) || false;
+  const isCreator = room?.players?.some(p => p.is_creator && (p.user_id == userId || p.chat_id === userId)) || false;
 
   const currentRoundAnswers = room?.answers || [];
   const hasAnswered = room?.answered;
 
   // ── РЕНДЕР ───────────────────────────────────
+
+  // Chat overlay — renders on top of any screen
+  const chatOverlay = showChat && room ? (
+    <>
+      <div className="chat-overlay-bg" onClick={closeChat} />
+      <div className="chat-panel">
+        <div className="chat-panel-header">
+          <span>💬 Чат</span>
+          <button className="chat-close" onClick={closeChat}>✕</button>
+        </div>
+        <div className="chat-panel-messages">
+          {(room?.messages || []).map((m, i) => (
+            <div key={i} className={`chat-msg ${m.nickname === (localStorage.getItem('username') || '') ? 'mine' : ''}`}>
+              <span className="chat-msg-nick">{m.nickname}</span>
+              <span className="chat-msg-text">{m.text}</span>
+              <span className="chat-msg-time">{m.time}</span>
+            </div>
+          ))}
+          {!(room?.messages?.length) && <div className="chat-empty">Пока тихо... 🤫</div>}
+        </div>
+        <div className="chat-panel-input">
+          <input
+            type="text"
+            value={chatText}
+            onChange={(e) => setChatText(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
+            placeholder="Сообщение..."
+            maxLength={200}
+          />
+          <button onClick={handleSendMessage} disabled={!chatText.trim()} type="button">➤</button>
+        </div>
+      </div>
+    </>
+  ) : null;
+
+  const chatBell = (
+    <button className="chat-bell" onClick={() => setShowChat(!showChat)}>
+      🔔
+      {unreadCount > 0 && <span className="chat-badge">{unreadCount}</span>}
+    </button>
+  );
 
   if (screen === 'menu') {
     return (
@@ -256,6 +345,7 @@ const ChallengePage = () => {
             <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)}
               placeholder="Введи никнейм" className="code-input" maxLength={20} />
           </div>
+          {isYandexUser ? (
           <div className="challenge-card">
             <div className="card-icon">🎯</div>
             <h2>Создать комнату</h2>
@@ -269,6 +359,16 @@ const ChallengePage = () => {
               {loading ? 'Создание...' : 'Создать'}
             </button>
           </div>
+          ) : (
+          <div className="challenge-card">
+            <div className="card-icon">🎯</div>
+            <h2>Создать комнату</h2>
+            <p style={{color:'#aaa',marginBottom:12}}>Для создания дуэли нужна авторизация</p>
+            <button className="challenge-btn primary" onClick={() => navigate('/login')}>
+              Войти через Яндекс
+            </button>
+          </div>
+          )}
           <div className="challenge-divider">или</div>
           <div className="challenge-card">
             <div className="card-icon">🤝</div>
@@ -282,6 +382,7 @@ const ChallengePage = () => {
           </div>
           {error && <div className="challenge-error">{error}</div>}
         </div>
+      {chatOverlay}
       </div>
     );
   }
@@ -310,6 +411,7 @@ const ChallengePage = () => {
           </div>
           {error && <div className="challenge-error">{error}</div>}
         </div>
+      {chatOverlay}
       </div>
     );
   }
@@ -320,7 +422,7 @@ const ChallengePage = () => {
         <div className="challenge-header">
           <button className="header-button" onClick={handleBackToMenu}>← Меню</button>
           <h1 className="challenge-title">🏠 Лобби <span className="room-code-badge">{room?.code}</span></h1>
-          <div />
+          {chatBell}
         </div>
         <div className="challenge-content">
           <div className="lobby-card">
@@ -330,8 +432,15 @@ const ChallengePage = () => {
                 {codeCopied ? '✅ Скопировано!' : <>📋 Код: <strong>{room?.code}</strong></>}
               </button>
               <button className="challenge-btn secondary" onClick={copyLink}>
-                {linkCopied ? '✅ Ссылка скопирована!' : '🔗 Скопировать ссылку'}
+                {linkCopied ? '✅ Скопировано!' : '🔗 Скопировать ссылку'}
               </button>
+              <input
+                type="text"
+                readOnly
+                value={getInviteLink()}
+                className="invite-link-input"
+                onClick={(e) => e.target.select()}
+              />
             </div>
             <div className="players-list">
               <h3>Игроки ({room?.players_count || 0}/{room?.max_players || 2}):</h3>
@@ -363,6 +472,7 @@ const ChallengePage = () => {
             {!isCreator && <p className="hint">Ждём, когда создатель начнёт игру</p>}
           </div>
         </div>
+      {chatOverlay}
       </div>
     );
   }
@@ -373,7 +483,7 @@ const ChallengePage = () => {
         <div className="challenge-header">
           <button className="header-button" onClick={handleBackToMenu}>← Выйти</button>
           <h1 className="challenge-title">⚔️ Дуэль <span className="room-code-badge">{room?.code}</span> — Раунд {room?.current_round}</h1>
-          <div />
+          {chatBell}
         </div>
         <div className="challenge-content">
           <div className="task-card">
@@ -381,7 +491,7 @@ const ChallengePage = () => {
             <p className="task-text">{room?.task}</p>
             <div className="scoreboard-mini">
               {room?.players?.map((p, i) => (
-                <span key={i} className="score-chip">{p.nickname || `Игрок ${i+1}`}: {p.total_score}</span>
+                <span key={i} className="score-chip">{p.nickname || `Игрок ${i+1}`}: {p.wins || 0} побед</span>
               ))}
             </div>
           </div>
@@ -403,7 +513,7 @@ const ChallengePage = () => {
           <div className="players-status">
             <h3>Игроки:</h3>
             {room?.players?.map((p, i) => {
-              const done = currentRoundAnswers.some(a => a.nickname === p.nickname) || (hasAnswered && p.chat_id === userId);
+              const done = currentRoundAnswers.some(a => a.nickname === p.nickname) || (hasAnswered && (p.user_id == userId || p.chat_id === userId));
               return (
                 <div key={i} className={`player-status ${done ? 'done' : 'waiting'}`}>
                   <span className="status-icon">{done ? '✅' : '⏳'}</span>
@@ -415,18 +525,19 @@ const ChallengePage = () => {
           </div>
           {error && <div className="challenge-error">{error}</div>}
         </div>
+      {chatOverlay}
       </div>
     );
   }
 
   if (screen === 'round_result') {
-    const sorted = [...(room?.players || [])].sort((a, b) => b.total_score - a.total_score);
+    const sorted = [...(room?.players || [])].sort((a, b) => (b.wins || 0) - (a.wins || 0));
     return (
       <div className="challenge-page">
         <div className="challenge-header">
           <button className="header-button" onClick={handleBackToMenu}>← Выйти</button>
           <h1 className="challenge-title">📊 Дуэль <span className="room-code-badge">{room?.code}</span> — Раунд {room?.current_round}</h1>
-          <div />
+          {chatBell}
         </div>
         <div className="challenge-content">
           <div className="result-card">
@@ -454,43 +565,44 @@ const ChallengePage = () => {
                 <div key={i} className={`score-row ${i === 0 ? 'first' : ''}`}>
                   <span className="score-place">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`}</span>
                   <span className="score-name">{p.nickname}</span>
-                  <span className="score-total">{p.total_score}</span>
+                  <span className="score-total">{p.wins || 0}</span>
                 </div>
               ))}
             </div>
             <div className="result-actions">
-              {isCreator && (
-                <>
+              {isCreator && room?.current_round < 3 && (
                   <button className="challenge-btn primary" onClick={handleNextRound} disabled={loading}>
                     Следующий вопрос ⚡
                   </button>
-                  <button className="challenge-btn secondary" onClick={handleFinish} disabled={loading}>
-                    Завершить игру
+              )}
+              {isCreator && room?.current_round >= 3 && (
+                  <button className="challenge-btn primary" onClick={handleNextRound} disabled={loading}>
+                    Итоги ⚡
                   </button>
-                </>
               )}
               {!isCreator && <p className="hint">Создатель решает: продолжить или закончить</p>}
             </div>
           </div>
         </div>
+      {chatOverlay}
       </div>
     );
   }
 
   if (screen === 'final') {
-    const sorted = [...(room?.players || [])].sort((a, b) => b.total_score - a.total_score);
+    const sorted = [...(room?.players || [])].sort((a, b) => (b.wins || 0) - (a.wins || 0));
     const winner = sorted[0];
     return (
       <div className="challenge-page">
         <div className="challenge-header">
           <button className="header-button" onClick={handleBackToMenu}>← Меню</button>
           <h1 className="challenge-title">🏆 Итоги <span className="room-code-badge">{room?.code}</span></h1>
-          <div />
+          {chatBell}
         </div>
         <div className="challenge-content">
           <div className="result-card final">
             <div className="result-banner win">
-              🏆 Победитель: {winner?.nickname || '—'} ({winner?.total_score} очков)
+              🏆 {winner?.nickname || '—'} победил({winner?.wins > 1 ? 'и' : 'а'}) в {winner?.wins} из 3 раундов!
             </div>
             <div className="final-scoreboard">
               {sorted.map((p, i) => (
@@ -499,7 +611,7 @@ const ChallengePage = () => {
                     {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`}
                   </span>
                   <span className="score-name">{p.nickname}</span>
-                  <span className="score-total">{p.total_score} очков</span>
+                  <span className="score-total">{p.wins || 0} побед</span>
                 </div>
               ))}
             </div>
@@ -510,7 +622,7 @@ const ChallengePage = () => {
                   <div key={r.round_number} className="history-round">
                     <div className="history-round-header">Раунд {r.round_number}</div>
                     {r.answers?.map((a, i) => (
-                      <div key={i} className="history-answer">
+                      <div key={i} className={`history-answer ${r.winner_ids && a.grade === Math.max(...r.answers.map(x => x.grade)) ? 'winner' : ''}`}>
                         <span>{a.nickname}: «{a.answer}» → {a.grade}/10</span>
                       </div>
                     ))}

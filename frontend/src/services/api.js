@@ -4,7 +4,7 @@ import axios from 'axios';
 // По умолчанию используем http://127.0.0.1:5000/api
 // В development можно использовать proxy из package.json (перенаправляет на http://127.0.0.1:5000)
 // Для production установите REACT_APP_API_URL=https://your-production-domain.com/api
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -83,8 +83,8 @@ export const duel2Accept = async (userId, code, nickname = '') => {
   return response.data;
 };
 
-export const duel2Start = async (userId) => {
-  const response = await api.post('/duel2/start', { user_id: userId });
+export const duel2Start = async (userId, roomId) => {
+  const response = await api.post('/duel2/start', { user_id: userId, room_id: roomId });
   return response.data;
 };
 
@@ -100,6 +100,11 @@ export const duel2Next = async (userId, roomId) => {
 
 export const duel2Finish = async (userId, roomId) => {
   const response = await api.post('/duel2/finish', { user_id: userId, room_id: roomId });
+  return response.data;
+};
+
+export const duel2Message = async (userId, roomId, text) => {
+  const response = await api.post('/duel2/message', { user_id: userId, room_id: roomId, text });
   return response.data;
 };
 
