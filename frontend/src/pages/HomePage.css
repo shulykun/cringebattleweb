@@ -4,92 +4,155 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
 }
 
 .home-container {
-  background: white;
-  border-radius: 20px;
-  padding: 60px 40px;
-  max-width: 600px;
+  max-width: 460px;
   width: 100%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   text-align: center;
 }
 
-.home-title {
-  font-size: 3.5rem;
-  color: #667eea;
+/* ── Profile bar ─────────────────────────── */
+.home-profile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
-  font-weight: 700;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
 }
-
-.home-subtitle {
-  font-size: 1.2rem;
-  color: #666;
-  margin-bottom: 40px;
-  line-height: 1.6;
+.profile-greeting {
+  color: rgba(255,255,255,0.85);
+  font-size: 0.9rem;
 }
-
-.home-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+.profile-link {
+  background: none;
   border: none;
-  padding: 18px 50px;
-  font-size: 1.2rem;
-  border-radius: 50px;
+  color: #a78bfa;
+  font-size: 0.9rem;
   cursor: pointer;
   font-weight: 600;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-  margin-bottom: 15px;
 }
+.profile-link:hover { text-decoration: underline; }
 
-.home-button.duel {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
-}
-
-.home-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
-}
-
-.home-button:active {
-  transform: translateY(0);
-}
-
-.home-features {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 50px;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.feature {
+/* ── Logo ────────────────────────────────── */
+.home-logo {
+  margin-bottom: 36px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  color: #666;
-  font-size: 0.95rem;
+}
+.logo-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 24px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 20px rgba(167, 139, 250, 0.4);
+}
+.home-title {
+  font-size: 2.6rem;
+  color: #fff;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 20px rgba(102, 126, 234, 0.5);
+}
+.home-tagline {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.6);
+  margin-top: 10px;
+  line-height: 1.5;
 }
 
-.feature-icon {
-  font-size: 2.5rem;
+/* ── Buttons ─────────────────────────────── */
+.home-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 36px;
+}
+.home-button {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 18px 24px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.home-button:hover {
+  transform: translateY(-2px);
+}
+.home-button:active {
+  transform: translateY(0);
+}
+.home-button.solo {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.35);
+}
+.home-button.solo:hover {
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
+}
+.home-button.duel {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  box-shadow: 0 8px 24px rgba(245, 87, 108, 0.35);
+}
+.home-button.duel:hover {
+  box-shadow: 0 12px 32px rgba(245, 87, 108, 0.5);
+}
+.button-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+.button-text {
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+}
+.button-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.button-desc {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  margin-top: 2px;
 }
 
-@media (max-width: 768px) {
-  .home-title {
-    font-size: 2.5rem;
-  }
-  
-  .home-subtitle {
-    font-size: 1rem;
-  }
-  
-  .home-container {
-    padding: 40px 30px;
-  }
+/* ── Stats ───────────────────────────────── */
+.home-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  padding: 20px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+}
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.stat-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #a78bfa;
+}
+.stat-label {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.5);
+  margin-top: 4px;
 }
 
+@media (max-width: 480px) {
+  .home-title { font-size: 2rem; }
+  .home-button { padding: 14px 18px; }
+  .home-stats { gap: 20px; }
+}

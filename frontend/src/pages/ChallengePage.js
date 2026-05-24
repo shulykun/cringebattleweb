@@ -17,6 +17,9 @@ const ChallengePage = () => {
   const [room, setRoom] = useState(null);
   const [roomId, setRoomId] = useState(() => localStorage.getItem('duelRoomId') || '');
   const [joinCode, setJoinCode] = useState('');
+  const [creatorNick, setCreatorNick] = useState('');
+  const [roomFull, setRoomFull] = useState(false);
+  const [roomNotFound, setRoomNotFound] = useState(false);
   const [nickname, setNickname] = useState(() => localStorage.getItem('username') || localStorage.getItem('nickname') || '');
   const [maxPlayers, setMaxPlayers] = useState(2);
   const [answer, setAnswer] = useState('');
@@ -45,26 +48,29 @@ const ChallengePage = () => {
   };
 
   useEffect(() => {
-    if (!userId) {
-      // Сохраняем код из URL перед уходом на логин
-      const codeFromUrl = searchParams.get('code');
-      if (codeFromUrl) {
-        localStorage.setItem('pendingDuelCode', codeFromUrl);
-      }
-      navigate('/login');
+    const codeFromUrl = searchParams.get('code');
+    // Если есть сохранённая комната — сначала восстановить
+    if (roomId) {
+      restoreRoom(roomId);
       return;
     }
-    // Восстанавливаем код после логина
-    const pendingCode = localStorage.getItem('pendingDuelCode');
-    const codeFromUrl = searchParams.get('code') || pendingCode;
-    if (pendingCode) localStorage.removeItem('pendingDuelCode');
+    // Если есть код из ссылки — экран ввода ника
     if (codeFromUrl) {
       setJoinCode(codeFromUrl);
       setScreen('join_by_link');
+      fetch(`/api/duel2/info/${codeFromUrl}`)
+        .then(r => r.json())
+        .then(d => {
+          if (d.status === 'error') { setRoomNotFound(true); return; }
+          if (d.creator_nickname) setCreatorNick(d.creator_nickname);
+          if (d.players_count >= d.max_players) setRoomFull(true);
+        })
+        .catch(() => { setRoomNotFound(true); });
       return;
     }
-    if (roomId) {
-      restoreRoom(roomId);
+    if (!userId) {
+      navigate('/login');
+      return;
     }
     return () => stopPolling();
   }, [userId, navigate]);
@@ -181,7 +187,25 @@ const ChallengePage = () => {
     setLoading(true); setError('');
     if (nickname) { localStorage.setItem('nickname', nickname); localStorage.setItem('username', nickname); }
     try {
-      const data = await duel2Accept(userId, joinCode.trim(), nickname);
+      // Если не авторизован — pseudo-login по нику
+      let uid = userId;
+      if (!uid) {
+        const res = await fetch('/api/auth/pseudo-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nickname: nickname.trim() })
+        });
+        const loginData = await res.json();
+        if (loginData.status === 'ok') {
+          uid = loginData.user_id;
+          localStorage.setItem('userId', uid);
+          localStorage.setItem('username', loginData.nickname);
+        } else {
+          setError(loginData.message || 'Ошибка входа');
+          setLoading(false); return;
+        }
+      }
+      const data = await duel2Accept(uid, joinCode.trim(), nickname);
       if (data.status === 'error') { setError(data.message); setLoading(false); return; }
       updateRoom(data); saveRoomId(data.room_id);
       if (data.room_status === 'waiting') { setScreen('lobby'); startPolling(data.room_id); }
@@ -335,16 +359,15 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
-          <button className="header-button" onClick={() => navigate('/game')}>← Игра</button>
-          <h1 className="challenge-title">⚔️ Дуэль</h1>
-          <button className="header-button" onClick={() => navigate('/')}>Главная</button>
+          <button className="header-button" onClick={() => navigate('/')}>←</button>
+          <span className="header-nick">{localStorage.getItem("username") || ""}</span>
+          <button className="header-button" onClick={() => {
+            const yid = localStorage.getItem('yandexId') || '';
+            if (!yid || yid.startsWith('guest_') || yid.startsWith('pseudo_')) navigate('/login');
+            else navigate('/profile');
+          }}>{(() => { const yid = localStorage.getItem('yandexId') || ''; return (!yid || yid.startsWith('guest_') || yid.startsWith('pseudo_')) ? 'Войти' : '👤'; })()}</button>
         </div>
         <div className="challenge-menu">
-          <div className="nickname-field">
-            <label>Твой ник:</label>
-            <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)}
-              placeholder="Введи никнейм" className="code-input" maxLength={20} />
-          </div>
           {isYandexUser ? (
           <div className="challenge-card">
             <div className="card-icon">🎯</div>
@@ -376,8 +399,23 @@ const ChallengePage = () => {
             <div className="join-form">
               <input type="text" value={joinCode} onChange={(e) => setJoinCode(e.target.value)}
                 placeholder="Код" className="code-input code-input-small" maxLength={3} disabled={loading} />
-              <button className="challenge-btn primary" onClick={handleJoin}
-                disabled={loading || !joinCode.trim() || !nickname.trim()}>Войти</button>
+              <button className="challenge-btn primary" onClick={() => {
+                if (joinCode.trim()) {
+                  setRoomNotFound(false);
+                  setRoomFull(false);
+                  setCreatorNick('');
+                  setScreen('join_by_link');
+                  fetch(`/api/duel2/info/${joinCode.trim()}`)
+                    .then(r => r.json())
+                    .then(d => {
+                      if (d.status === 'error') { setRoomNotFound(true); return; }
+                      if (d.creator_nickname) setCreatorNick(d.creator_nickname);
+                      if (d.players_count >= d.max_players) setRoomFull(true);
+                    })
+                    .catch(() => { setRoomNotFound(true); });
+                }
+              }}
+                disabled={loading || !joinCode.trim()}>Войти</button>
             </div>
           </div>
           {error && <div className="challenge-error">{error}</div>}
@@ -391,25 +429,55 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
-          <button className="header-button" onClick={handleBackToMenu}>← Меню</button>
-          <h1 className="challenge-title">⚔️ Дуэль</h1>
+          <button className="header-button" onClick={handleBackToMenu}>←</button>
+          <span className="header-nick">{localStorage.getItem("username") || ""}</span>
           <div />
         </div>
-        <div className="challenge-content">
-          <div className="challenge-card">
-            <div className="card-icon">🤝</div>
-            <h2>Тебя вызывают на дуэль!</h2>
-            <p>Код: <strong>{joinCode}</strong></p>
-            <div className="nickname-field">
-              <label>Твой ник:</label>
-              <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)}
-                placeholder="Введи никнейм" className="code-input" maxLength={20} />
-            </div>
-            <button className="challenge-btn primary" onClick={handleJoin} disabled={loading || !nickname.trim()}>
-              {loading ? 'Подключение...' : 'Принять вызов ⚡'}
-            </button>
+        <div className="challenge-content" style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+          <div className="join-duel-screen">
+            <img src="/logo.jpg" alt="" className="logo-img" />
+            <h2 style={{color:'#fff',fontWeight:800,margin:'8px 0 0',fontSize:'1.8rem'}}>Бой с кринжем</h2>
+            {roomNotFound ? (
+              <>
+                <div className="join-vs">🤷</div>
+                <h2 className="join-title">Такой комнаты не существует</h2>
+                <button className="challenge-btn duel" onClick={() => navigate('/login')}>
+                  Войти и создать ⚡
+                </button>
+              </>
+            ) : roomFull ? (
+              <>
+                <div className="join-vs">😞</div>
+                <h2 className="join-title">Комната уже заполнена!</h2>
+                <p style={{color:'rgba(255,255,255,0.5)',fontSize:'0.95rem',textAlign:'center',lineHeight:1.5}}>
+                  Все места заняты. Создай свою дуэль!
+                </p>
+                <button className="challenge-btn duel" onClick={() => navigate('/login')}>
+                  Войти и создать ⚡
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="join-vs">⚔️</div>
+                <h2 className="join-title">{creatorNick ? `${creatorNick} вызывает тебя` : 'Тебя вызывают'}<br/>на дуэль!</h2>
+                <input
+                  type="text"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
+                  placeholder="Твой ник..."
+                  className="join-nick-input"
+                  maxLength={20}
+                  autoFocus
+                />
+                <button className="challenge-btn duel" onClick={handleJoin} disabled={loading || !nickname.trim()}>
+                  {loading ? 'Подключение...' : 'Принять вызов ⚡'}
+                </button>
+                <span style={{color:'rgba(255,255,255,0.3)',fontSize:'0.8rem',letterSpacing:'2px'}}>Комната {joinCode}</span>
+              </>
+            )}
+            {error && <div className="challenge-error">{error}</div>}
           </div>
-          {error && <div className="challenge-error">{error}</div>}
         </div>
       {chatOverlay}
       </div>
@@ -420,19 +488,16 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
-          <button className="header-button" onClick={handleBackToMenu}>← Меню</button>
-          <h1 className="challenge-title">🏠 Лобби <span className="room-code-badge">{room?.code}</span></h1>
+          <button className="header-button" onClick={handleBackToMenu}>←</button>
+          <span className="header-nick">🏠 {room?.code}</span>
           {chatBell}
         </div>
         <div className="challenge-content">
           <div className="lobby-card">
             <h2>Комната {room?.code}</h2>
             <div className="invite-section">
-              <button className="challenge-btn secondary" onClick={copyCode}>
-                {codeCopied ? '✅ Скопировано!' : <>📋 Код: <strong>{room?.code}</strong></>}
-              </button>
               <button className="challenge-btn secondary" onClick={copyLink}>
-                {linkCopied ? '✅ Скопировано!' : '🔗 Скопировать ссылку'}
+                {linkCopied ? '✅ Ссылка скопирована!' : '🔗 Пригласить по ссылке'}
               </button>
               <input
                 type="text"
@@ -481,8 +546,8 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
-          <button className="header-button" onClick={handleBackToMenu}>← Выйти</button>
-          <h1 className="challenge-title">⚔️ Дуэль <span className="room-code-badge">{room?.code}</span> — Раунд {room?.current_round}</h1>
+          <button className="header-button" onClick={handleBackToMenu}>←</button>
+          <span className="header-nick">⚔️ Раунд {room?.current_round}</span>
           {chatBell}
         </div>
         <div className="challenge-content">
@@ -535,8 +600,8 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
-          <button className="header-button" onClick={handleBackToMenu}>← Выйти</button>
-          <h1 className="challenge-title">📊 Дуэль <span className="room-code-badge">{room?.code}</span> — Раунд {room?.current_round}</h1>
+          <button className="header-button" onClick={handleBackToMenu}>←</button>
+          <span className="header-nick">📊 Раунд {room?.current_round}</span>
           {chatBell}
         </div>
         <div className="challenge-content">
@@ -595,8 +660,8 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
-          <button className="header-button" onClick={handleBackToMenu}>← Меню</button>
-          <h1 className="challenge-title">🏆 Итоги <span className="room-code-badge">{room?.code}</span></h1>
+          <button className="header-button" onClick={handleBackToMenu}>←</button>
+          <span className="header-nick">🏆 Итоги</span>
           {chatBell}
         </div>
         <div className="challenge-content">

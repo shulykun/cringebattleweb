@@ -12,17 +12,15 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Проверяем, есть ли уже авторизованный пользователь
+    // Уже авторизован — на главную
     const userId = localStorage.getItem('userId');
     if (userId) {
-      navigate('/game');
+      navigate('/');
       return;
     }
-
-    // Проверяем, есть ли токен в URL (callback от Яндекс OAuth)
+    // Яндекс OAuth callback
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
-    
     if (code) {
       handleYandexCallback(code);
     }
@@ -31,19 +29,13 @@ const LoginPage = () => {
   const handleYandexCallback = async (code) => {
     setLoading(true);
     setError('');
-
     try {
-      // Отправляем code на backend для обмена на access_token и получения user_id
-      // Backend должен обработать обмен code на token и авторизацию
       const authResponse = await authWithYandex(code);
-      
       if (authResponse.success) {
         localStorage.setItem('userId', authResponse.user_id);
         localStorage.setItem('username', authResponse.username || '');
         localStorage.setItem('email', authResponse.email || '');
         localStorage.setItem('yandexId', authResponse.yandex_id || '');
-        
-        // Очищаем URL от параметров
         window.history.replaceState({}, document.title, '/login');
         navigate('/');
       } else {
@@ -51,55 +43,27 @@ const LoginPage = () => {
       }
     } catch (err) {
       console.error('Yandex OAuth error:', err);
-      setError('Ошибка подключения к серверу. Убедитесь, что backend запущен.');
+      setError('Ошибка подключения к серверу');
     } finally {
       setLoading(false);
     }
   };
 
   const handleYandexLogin = () => {
-    // Redirect URI указывает на адрес фронтенда /login, где будет обработан code
     const redirectUri = `${window.location.origin}/login`;
     const yandexAuthUrl = `${YANDEX_OAUTH_URL}?response_type=code&client_id=${YANDEX_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}`;
-    
     window.location.href = yandexAuthUrl;
-  };
-
-  const [testNick, setTestNick] = useState('');
-  const [loginLoading, setLoginLoading] = useState(false);
-
-  const handleTestLogin = async () => {
-    const nick = testNick.trim() || ('Player_' + Math.random().toString(36).substring(2, 6));
-    setLoginLoading(true);
-    try {
-      const res = await fetch('/api/auth/pseudo-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nickname: nick })
-      });
-      const data = await res.json();
-      if (data.status === 'ok') {
-        localStorage.setItem('userId', data.user_id);
-        localStorage.setItem('username', data.nickname);
-        navigate('/');
-      }
-    } catch (e) {
-      console.error('Login error:', e);
-      // Fallback
-      const testId = 'test_' + Math.random().toString(36).substring(2, 8);
-      localStorage.setItem('userId', testId);
-      localStorage.setItem('username', nick);
-      navigate('/duel');
-    }
-    setLoginLoading(false);
   };
 
   return (
     <div className="login-page">
       <div className="login-container">
-        <h1 className="login-title">Авторизация</h1>
+        <div className="home-logo">
+          <img src="/logo.jpg" alt="Бой с кринжем" className="logo-img" />
+          <h1 className="login-title">Бой с кринжем</h1>
+        </div>
         <p className="login-subtitle">
-          Войдите через Яндекс для начала игры
+          Войдите через Яндекс
         </p>
 
         {error && (
@@ -126,39 +90,16 @@ const LoginPage = () => {
           </button>
         </div>
 
-        <button 
+        <button
           className="login-back-button"
           onClick={() => navigate('/')}
           disabled={loading}
         >
           ← На главную
         </button>
-
-        <div className="test-login-block">
-          <p className="login-subtitle" style={{marginTop: '20px'}}>Или введи ник для быстрого входа:</p>
-          <div style={{display: 'flex', gap: '10px', marginTop: '10px'}}>
-            <input
-              type="text"
-              value={testNick}
-              onChange={(e) => setTestNick(e.target.value)}
-              placeholder="Твой ник..."
-              className="login-input"
-              style={{flex: 1}}
-            />
-            <button
-              className="login-back-button"
-              onClick={handleTestLogin}
-              disabled={loginLoading}
-              style={{color: '#667eea', whiteSpace: 'nowrap'}}
-            >
-              {loginLoading ? '...' : '⚡ Войти'}
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );
 };
 
 export default LoginPage;
-

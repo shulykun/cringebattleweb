@@ -18,6 +18,12 @@ const GamePage = () => {
       navigate('/login');
       return;
     }
+    // Pseudo-пользователям нужна авторизация для одиночной игры
+    const yid = localStorage.getItem('yandexId') || '';
+    if (!yid || yid.startsWith('guest_') || yid.startsWith('pseudo_')) {
+      navigate('/login');
+      return;
+    }
     loadScore();
   }, [userId, navigate]);
 
@@ -152,13 +158,15 @@ const GamePage = () => {
   return (
     <div className="game-page">
       <div className="game-header">
-        <button className="header-button" onClick={() => navigate('/profile')}>
-          Профиль
-        </button>
-        <h1 className="game-title">Бой с кринжем</h1>
         <button className="header-button" onClick={() => navigate('/')}>
-          Главная
+          ←
         </button>
+        <span className="header-nick">{localStorage.getItem('username') || ''}</span>
+        <button className="header-button" onClick={() => {
+          const yid = localStorage.getItem('yandexId') || '';
+          if (!yid || yid.startsWith('guest_') || yid.startsWith('pseudo_')) navigate('/login');
+          else navigate('/profile');
+        }}>{(() => { const yid = localStorage.getItem('yandexId') || ''; return (!yid || yid.startsWith('guest_') || yid.startsWith('pseudo_')) ? 'Войти' : '👤'; })()}</button>
       </div>
 
       <div className="game-content">
