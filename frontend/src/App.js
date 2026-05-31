@@ -7,6 +7,7 @@ import ProfilePage from './pages/ProfilePage';
 import ChallengePage from './pages/ChallengePage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import UserPage from './pages/UserPage';
+import RulesPage from './pages/RulesPage';
 import './App.css';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="/user/:userId" element={<UserPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/rules" element={<RulesPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

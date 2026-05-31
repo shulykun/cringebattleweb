@@ -1,0 +1,95 @@
+/* ── Rules Page ── */
+.rules-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+}
+
+.rules-content {
+  flex: 1;
+  padding: 24px;
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.rules-intro {
+  margin-bottom: 24px;
+}
+
+.rules-intro-text {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1rem;
+  line-height: 1.7;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.rules-section {
+  margin-bottom: 24px;
+}
+
+.rules-section-title {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.rules-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.rules-card p {
+  margin: 0 0 12px;
+}
+
+.rules-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.rules-list li {
+  position: relative;
+  padding: 8px 0 8px 24px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.rules-list li::before {
+  content: '•';
+  position: absolute;
+  left: 8px;
+  color: #a78bfa;
+  font-weight: bold;
+}
+
+.rules-list strong {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.rules-card a {
+  color: #a78bfa;
+  text-decoration: none;
+}
+
+.rules-card a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .rules-content { padding: 16px; }
+  .rules-intro-text, .rules-card { padding: 16px; }
+}

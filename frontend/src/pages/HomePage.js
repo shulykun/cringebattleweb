@@ -73,6 +73,13 @@ const HomePage = () => {
             <span className="button-desc">Рейтинг игроков</span>
           </span>
         </button>
+        <button className="home-button rules-link" onClick={() => { reachGoal('click_rules'); navigate('/rules'); }}>
+          <span className="button-icon">📖</span>
+          <span className="button-text">
+            <span className="button-title">Правила игры</span>
+            <span className="button-desc">Как играть и команды</span>
+          </span>
+        </button>
       </div>
     </div>
   );
