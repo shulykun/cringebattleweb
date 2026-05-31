@@ -134,7 +134,8 @@
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.4);
-  padding: 10px 24px;
+  padding: 6px 14px;
+  font-size: 0.75rem;
   border-radius: 10px;
   cursor: pointer;
   font-size: 0.85rem;
@@ -154,9 +155,10 @@
 .profile-home {
   background: none;
   border: none;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.6);
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 1rem;
+  padding: 10px 24px;
   padding: 6px;
 }
 .profile-home:hover { color: rgba(255,255,255,0.7); }
