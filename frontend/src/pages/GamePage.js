@@ -184,7 +184,7 @@ const GamePage = () => {
 
   return (
     <div className="game-page">
-      <AppHeader backTo="/" rightButtons={[{ label: '👤', onClick: () => navigate('/profile') }]} />
+      <AppHeader backTo="/" rightButtons={[{ label: '📖', onClick: () => navigate('/rules') }, { label: '👤', onClick: () => navigate('/profile') }]} />
       <Helmet>
         <title>Играть — Бой с кринжем | Игра с Алисой</title>
         <meta name="description" content="Попадай в неловкие ситуации и выходи из них с блеском! Одиночная игра с AI-судьёй." />
