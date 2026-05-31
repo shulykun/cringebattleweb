@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { reachGoal } from '../services/metrica';
 import './LeaderboardPage.css';
 
 const LeaderboardPage = () => {
@@ -8,6 +9,7 @@ const LeaderboardPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    reachGoal('leaderboard_view');
     fetch('/api/leaderboard')
       .then(r => r.json())
       .then(d => {
@@ -21,10 +23,10 @@ const LeaderboardPage = () => {
     <div className="leaderboard-page">
       <div className="leaderboard-header">
         <button className="header-button" onClick={() => navigate('/duel')}>←</button>
-        <span className="header-title">🏆 Таблица очков</span>
-        <img src="/logo.jpg" alt="" className="header-logo" />
+        <img src="/logo.jpg" alt="" className="header-logo-centered" />
       </div>
       <div className="leaderboard-content">
+        <h2 className="leaderboard-title">🏆 Таблица лидеров</h2>
         {loading ? (
           <div className="leaderboard-loading">Загрузка...</div>
         ) : data.length === 0 ? (

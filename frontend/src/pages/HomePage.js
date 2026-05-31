@@ -1,11 +1,16 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { reachGoal } from '../services/metrica';
 import './HomePage.css';
+
+import { reachGoal } from '../services/metrica';
 
 const HomePage = () => {
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
   const username = localStorage.getItem('username') || localStorage.getItem('nickname') || '';
+
+  useEffect(() => { reachGoal('page_view'); }, []);
 
   return (
     <div className="home-page">
@@ -14,7 +19,7 @@ const HomePage = () => {
         {userId && (
           <div className="home-profile">
             <span className="profile-greeting">👋 {username}</span>
-            <button className="profile-link" onClick={() => navigate('/profile')}>
+            <button className="profile-link" onClick={() => { reachGoal('click_profile'); navigate('/profile'); }}>
               Профиль →
             </button>
           </div>
@@ -29,14 +34,14 @@ const HomePage = () => {
 
         {/* Buttons */}
         <div className="home-buttons">
-          <button className="home-button solo" onClick={() => navigate('/game')}>
+          <button className="home-button solo" onClick={() => { reachGoal('click_solo'); navigate('/game'); }}>
             <span className="button-icon">🎮</span>
             <span className="button-text">
               <span className="button-title">Играть одному</span>
               <span className="button-desc">Тренируйся против AI</span>
             </span>
           </button>
-          <button className="home-button duel" onClick={() => navigate('/duel')}>
+          <button className="home-button duel" onClick={() => { reachGoal('click_duel'); navigate('/duel'); }}>
             <span className="button-icon">⚔️</span>
             <span className="button-text">
               <span className="button-title">Онлайн дуэль</span>
@@ -62,7 +67,7 @@ const HomePage = () => {
         </div>
 
         {/* Leaderboard link */}
-        <button className="home-button leaderboard-link" onClick={() => navigate('/leaderboard')}>
+        <button className="home-button leaderboard-link" onClick={() => { reachGoal('click_leaderboard'); navigate('/leaderboard'); }}>
           <span className="button-icon">🏆</span>
           <span className="button-text">
             <span className="button-title">Таблица лидеров</span>

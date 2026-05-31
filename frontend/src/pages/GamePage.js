@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getScore, sendMessage } from '../services/api';
+import { reachGoal } from '../services/metrica';
 import './GamePage.css';
 
 const GamePage = () => {
@@ -41,6 +42,7 @@ const GamePage = () => {
   };
 
   const handleButtonClick = async (button) => {
+    if (button === 'Начать игру' || button === 'Новая игра') reachGoal('solo_start');
     if (loading) return;
 
     const previousMessages = messages;
@@ -78,7 +80,7 @@ const GamePage = () => {
       setMessages([...previousPair, userMessage, gameMessage]);
       // Сохраняем кнопки для отображения под формой ввода
       setCurrentButtons(gameMessage.buttons || []);
-      await loadScore();
+      await loadScore(); reachGoal('solo_round_complete');
       
       if (response.response?.end_session) {
         setTimeout(() => {
@@ -97,6 +99,7 @@ const GamePage = () => {
   const handleTextSubmit = async (e) => {
     e.preventDefault();
     if (!inputText.trim() || loading) return;
+    reachGoal('solo_answer');
 
     const userText = inputText.trim();
     setInputText('');
@@ -133,7 +136,7 @@ const GamePage = () => {
       setMessages([...previousPair, userMessage, gameMessage]);
       // Сохраняем кнопки для отображения под формой ввода
       setCurrentButtons(gameMessage.buttons || []);
-      await loadScore();
+      await loadScore(); reachGoal('solo_round_complete');
       
       if (response.response?.end_session) {
         setTimeout(() => {

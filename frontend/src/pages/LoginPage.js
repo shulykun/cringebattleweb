@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { reachGoal } from '../services/metrica';
 import { authWithYandex } from '../services/api';
 import './LoginPage.css';
 
@@ -34,6 +35,7 @@ const LoginPage = () => {
     try {
       const authResponse = await authWithYandex(code);
       if (authResponse.success) {
+        reachGoal('login');
         localStorage.setItem('userId', authResponse.user_id);
         localStorage.setItem('username', authResponse.username || '');
         localStorage.setItem('email', authResponse.email || '');

@@ -17,9 +17,12 @@
   position: relative;
 }
 
-.header-title {
-  font-size: 1.1rem;
-  font-weight: 600;
+.header-logo-centered {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: contain;
+  margin: 0 auto;
 }
 
 .header-button {
@@ -30,17 +33,16 @@
   padding: 6px 12px;
   border-radius: 8px;
   cursor: pointer;
+  position: absolute;
+  left: 24px;
 }
 
-.header-logo {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  object-fit: contain;
-  pointer-events: none;
+.leaderboard-title {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: #fff;
 }
 
 .leaderboard-content {

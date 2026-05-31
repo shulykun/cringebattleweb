@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { reachGoal } from '../services/metrica';
 import './UserPage.css';
 
 const UserPage = () => {
@@ -9,6 +10,7 @@ const UserPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    reachGoal('user_profile_view');
     fetch(`/api/user/${userId}`)
       .then(r => r.json())
       .then(d => {

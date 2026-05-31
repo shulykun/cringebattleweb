@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { duel2Create, duel2Accept, duel2Start, duel2Answer, duel2Next, duel2Finish, duel2Message, duel2Status, duel2Rematch } from '../services/api';
+import { reachGoal } from '../services/metrica';
 import './ChallengePage.css';
 
 const POLL_INTERVAL = 3000;
@@ -193,6 +194,7 @@ const ChallengePage = () => {
   // ── Создать комнату ──────────────────────────
   const handleCreate = async () => {
     setLoading(true); setError('');
+    reachGoal('duel_create');
     if (nickname) { localStorage.setItem('nickname', nickname); localStorage.setItem('username', nickname); }
     try {
       const data = await duel2Create(userId, nickname, maxPlayers);
@@ -207,6 +209,7 @@ const ChallengePage = () => {
   const handleJoin = async () => {
     if (!joinCode.trim()) return;
     setLoading(true); setError('');
+    reachGoal('duel_join');
     if (nickname) { localStorage.setItem('nickname', nickname); localStorage.setItem('username', nickname); }
     try {
       // Если не авторизован — pseudo-login по нику
@@ -219,6 +222,7 @@ const ChallengePage = () => {
         });
         const loginData = await res.json();
         if (loginData.status === 'ok') {
+          reachGoal('pseudo_login');
           uid = loginData.user_id;
           localStorage.setItem('userId', uid);
           localStorage.setItem('username', loginData.nickname);
@@ -239,6 +243,7 @@ const ChallengePage = () => {
   // ── Начать игру ──────────────────────────────
   const handleStart = async () => {
     setLoading(true); setError('');
+    reachGoal('duel_start');
     try {
       const data = await duel2Start(userId, room.room_id);
       if (data.status === 'error') { setError(data.message); setLoading(false); return; }
@@ -251,6 +256,7 @@ const ChallengePage = () => {
   const handleAnswer = async () => {
     if (!answer.trim() || answer.trim().length < 3) return;
     setLoading(true); setError('');
+    reachGoal('duel_answer');
     try {
       const data = await duel2Answer(userId, room.room_id, answer.trim());
       if (data.status === 'error') { setError(data.message); setLoading(false); return; }
@@ -263,6 +269,7 @@ const ChallengePage = () => {
   // ── Следующий раунд ──────────────────────────
   const handleNextRound = async () => {
     setLoading(true); setError(''); setAnswer(''); setLastGrade(null);
+    reachGoal('duel_round_complete');
     try {
       const data = await duel2Next(userId, room.room_id);
       if (data.status === 'error') { setError(data.message); setLoading(false); return; }
@@ -274,6 +281,7 @@ const ChallengePage = () => {
   // ── Завершить игру ───────────────────────────
   const handleFinish = async () => {
     setLoading(true);
+    reachGoal('duel_finish');
     try {
       const data = await duel2Finish(userId, room.room_id);
       updateRoom(data); setScreen('final'); stopPolling();
@@ -329,6 +337,7 @@ const ChallengePage = () => {
   const copyLink = () => {
     copyToClipboard(getInviteLink());
     setLinkCopied(true);
+    reachGoal('duel_invite_copy');
     setTimeout(() => setLinkCopied(false), 2000);
   };
   const copyCode = () => {
@@ -749,6 +758,7 @@ const ChallengePage = () => {
                 const nick = localStorage.getItem('username') || localStorage.getItem('nickname') || nickname;
                 if (!nick) { handleBackToMenu(); return; }
                 setLoading(true);
+                reachGoal('duel_rematch');
                 try {
                   const data = await duel2Rematch(userId, room.room_id, nick, maxPlayers);
                   if (data.status === 'error') { setError(data.message); setLoading(false); return; }
