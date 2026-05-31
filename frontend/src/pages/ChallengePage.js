@@ -410,14 +410,16 @@ const ChallengePage = () => {
         <div className="challenge-header">
           <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль</span></div>
           <button className="header-button" onClick={() => navigate('/')}>←</button>
-          <span className="header-nick">{localStorage.getItem("username") || ""}</span>
-          <button className="header-button" onClick={() => {
+          <div className="header-right">
+            <span className="header-nick">{localStorage.getItem("username") || ""}</span>
+            <button className="header-button" onClick={() => {
             const yid = localStorage.getItem('yandexId') || '';
             const uid = localStorage.getItem('userId') || '';
             const isPseudo = !yid || yid.startsWith('guest_') || yid.startsWith('pseudo_') || uid.startsWith('web_');
             if (isPseudo) navigate('/login');
             else navigate('/profile');
           }}>{(() => { const yid = localStorage.getItem('yandexId') || ''; const uid = localStorage.getItem('userId') || ''; return (!yid || yid.startsWith('guest_') || yid.startsWith('pseudo_') || uid.startsWith('web_')) ? 'Войти' : '👤'; })()}</button>
+          </div>
         </div>
         <div className="challenge-menu">
           {isYandexUser ? (
@@ -483,8 +485,10 @@ const ChallengePage = () => {
         <div className="challenge-header">
           <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
-          <span className="header-nick">{localStorage.getItem("username") || ""}</span>
-          <div />
+          <div className="header-right">
+            <span className="header-nick">{localStorage.getItem("username") || ""}</span>
+            <div />
+          </div>
         </div>
         <div className="challenge-content" style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
           <div className="join-duel-screen">
@@ -544,8 +548,10 @@ const ChallengePage = () => {
         <div className="challenge-header">
           <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: {room?.code}</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
-          <span className="header-nick">🏠 {room?.code}</span>
-          {chatBell}
+          <div className="header-right">
+            <span className="header-nick">🏠 {room?.code}</span>
+            {chatBell}
+          </div>
         </div>
         <div className="challenge-content">
           <div className="lobby-card">
@@ -604,8 +610,10 @@ const ChallengePage = () => {
         <div className="challenge-header">
           <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: раунд {room?.current_round}</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
-          <span className="header-nick">⚔️ Раунд {room?.current_round}</span>
-          {chatBell}
+          <div className="header-right">
+            <span className="header-nick">⚔️ Раунд {room?.current_round}</span>
+            {chatBell}
+          </div>
         </div>
         <div className="challenge-content">
           <div className="task-card">
@@ -660,8 +668,10 @@ const ChallengePage = () => {
         <div className="challenge-header">
           <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: раунд {room?.current_round}</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
-          <span className="header-nick">📊 Раунд {room?.current_round}</span>
-          {chatBell}
+          <div className="header-right">
+            <span className="header-nick">📊 Раунд {room?.current_round}</span>
+            {chatBell}
+          </div>
         </div>
         <div className="challenge-content">
           <div className="result-card">
@@ -715,8 +725,10 @@ const ChallengePage = () => {
         <div className="challenge-header">
           <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: итоги</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
-          <span className="header-nick" />
-          {chatBell}
+          <div className="header-right">
+            <span className="header-nick" />
+            {chatBell}
+          </div>
         </div>
         <div className="challenge-content">
           <div className="result-card final">
