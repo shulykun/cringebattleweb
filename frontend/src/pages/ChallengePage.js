@@ -415,6 +415,7 @@ const ChallengePage = () => {
           <meta name="description" content="Сразись с друзьями в онлайн-дуэли! Создай комнату или присоединись по коду." />
         </Helmet>
         <div className="challenge-menu">
+          <p className="challenge-desc">Сразись с друзьями в реальном времени! Создай комнату или присоединись по коду. Каждый раунд — новая неловкая ситуация, а ответы оцениваются по оригинальности.</p>
           {isYandexUser ? (
           <div className="challenge-card">
             <div className="card-icon">🎯</div>
