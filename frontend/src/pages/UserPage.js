@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { reachGoal } from '../services/metrica';
 import './UserPage.css';
+import AppHeader from '../components/AppHeader';
 
 const UserPage = () => {
   const navigate = useNavigate();
@@ -48,10 +49,7 @@ const UserPage = () => {
 
   return (
     <div className="user-page">
-      <div className="user-header">
-        <button className="header-button" onClick={() => navigate(-1)}>←</button>
-        <img src="/logo.jpg" alt="" className="header-logo" />
-      </div>
+      <AppHeader backTo="/leaderboard" />
       <div className="user-content">
         <div className="profile-avatar">
           <span className="avatar-emoji">😎</span>
