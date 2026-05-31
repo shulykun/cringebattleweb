@@ -109,10 +109,13 @@
 .leaderboard-link {
   background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
   box-shadow: 0 8px 24px rgba(167, 139, 250, 0.3);
-  margin-top: 12px;
+  margin-top: 24px;
 }
 .leaderboard-link:hover {
   box-shadow: 0 12px 32px rgba(167, 139, 250, 0.5);
+}
+.rules-link {
+  margin-top: 12px;
 }
 .button-icon {
   font-size: 1.8rem;
