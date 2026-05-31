@@ -132,6 +132,7 @@ const GamePage = () => {
       // Берем только последние 2 сообщения (предыдущая пара) и добавляем новое сообщение пользователя
       const previousPair = messages.slice(-2);
       setMessages([...previousPair, userMessage]);
+      new Audio('/sounds/send.mp3').play().catch(() => {});
       
       const response = await sendMessage(userId, userText);
       if (!response.response) {
