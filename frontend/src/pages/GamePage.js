@@ -236,6 +236,15 @@ const GamePage = () => {
                       
                       <div className="game-message-bubble">
                         {message.text}
+                        {message.buttons && message.buttons.length > 0 && (
+                          <div className="inline-buttons">
+                            {message.buttons.map((btn, bi) => (
+                              <button key={bi} className="inline-button" onClick={() => handleButtonClick(btn)} disabled={loading}>
+                                {btn.title}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </>
@@ -280,26 +289,6 @@ const GamePage = () => {
               Отправить
             </button>
           </form>
-          
-          <div className="suggestion-buttons">
-            <h3 className="suggestion-title">Действия</h3>
-            <div className="suggestion-buttons-container">
-              {currentButtons && currentButtons.length > 0 ? (
-                currentButtons.map((button, btnIndex) => (
-                  <button
-                    key={btnIndex}
-                    className="suggestion-button"
-                    onClick={() => handleButtonClick(button)}
-                    disabled={loading}
-                  >
-                    {button.title}
-                  </button>
-                ))
-              ) : (
-                <div className="suggestion-empty">Нет доступных действий</div>
-              )}
-            </div>
-          </div>
         </div>
 
         <div className="score-panel">

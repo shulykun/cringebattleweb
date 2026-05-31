@@ -440,3 +440,27 @@
     max-width: 90%;
   }
 }
+.inline-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.inline-button {
+  background: rgba(167, 139, 250, 0.2);
+  border: 1px solid rgba(167, 139, 250, 0.4);
+  color: #a78bfa;
+  padding: 6px 14px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.inline-button:hover {
+  background: rgba(167, 139, 250, 0.35);
+}
+.inline-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
