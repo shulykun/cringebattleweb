@@ -621,7 +621,7 @@ const ChallengePage = () => {
             <div className="answer-sent">
               <div className="your-grade"><h3>Ответ отправлен! Оценка: {lastGrade}/10</h3></div>
               <div className="waiting-dots"><span></span><span></span><span></span></div>
-              <p>Ждём остальных...</p>
+              <p style={{color: 'rgba(255,255,255,0.7)'}}>Ждём остальных...</p>
             </div>
           ) : (
             <div className="answer-form">
