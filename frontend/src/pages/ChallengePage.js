@@ -549,7 +549,7 @@ const ChallengePage = () => {
           <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: {room?.code}</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
-            <span className="header-nick">🏠 {room?.code}</span>
+            <span className="header-nick">{localStorage.getItem("username") || ""}</span>
             {chatBell}
           </div>
         </div>
@@ -611,7 +611,7 @@ const ChallengePage = () => {
           <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: раунд {room?.current_round}</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
-            <span className="header-nick">⚔️ Раунд {room?.current_round}</span>
+            <span className="header-nick">{localStorage.getItem("username") || ""}</span>
             {chatBell}
           </div>
         </div>
@@ -669,7 +669,7 @@ const ChallengePage = () => {
           <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: раунд {room?.current_round}</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
-            <span className="header-nick">📊 Раунд {room?.current_round}</span>
+            <span className="header-nick">{localStorage.getItem("username") || ""}</span>
             {chatBell}
           </div>
         </div>
@@ -726,7 +726,7 @@ const ChallengePage = () => {
           <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: итоги</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
-            <span className="header-nick" />
+            <span className="header-nick">{localStorage.getItem("username") || ""}</span>
             {chatBell}
           </div>
         </div>
