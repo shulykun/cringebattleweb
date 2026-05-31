@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getScore, sendMessage } from '../services/api';
+import AppHeader from '../components/AppHeader';
 import { reachGoal } from '../services/metrica';
 import './GamePage.css';
 
@@ -178,14 +179,7 @@ const GamePage = () => {
 
   return (
     <div className="game-page">
-      <div className="game-header">
-        <button className="header-button" onClick={() => navigate('/')}>
-          ←
-        </button>
-        <div style={{display:'flex',alignItems:'center',gap:'8px',marginLeft:'auto'}}>
-          <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
-        </div>
-      </div>
+      <AppHeader backTo="/" rightButtons={[{ label: '👤', onClick: () => navigate('/profile') }]} />
 
       <div className="game-content">
         <div className="game-chat-container">
