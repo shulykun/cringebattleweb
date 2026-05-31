@@ -179,19 +179,11 @@ const GamePage = () => {
   return (
     <div className="game-page">
       <div className="game-header">
-        <img src="/logo.jpg" alt="" style={{position:'absolute',left:'50%',transform:'translateX(-50%)',width:'32px',height:'32px',borderRadius:'6px',objectFit:'contain',pointerEvents:'none'}} />
         <button className="header-button" onClick={() => navigate('/')}>
           ←
         </button>
         <div style={{display:'flex',alignItems:'center',gap:'8px',marginLeft:'auto'}}>
-          <span className="header-nick">{localStorage.getItem('username') || ''}</span>
-          <button className="header-button" onClick={() => {
-          const yid = localStorage.getItem('yandexId') || '';
-          const uid = localStorage.getItem('userId') || '';
-          const isPseudo = !yid || yid.startsWith('guest_') || yid.startsWith('pseudo_') || uid.startsWith('web_');
-          if (isPseudo) navigate('/login');
-          else navigate('/profile');
-        }}>{(() => { const yid = localStorage.getItem('yandexId') || ''; const uid = localStorage.getItem('userId') || ''; return (!yid || yid.startsWith('guest_') || yid.startsWith('pseudo_') || uid.startsWith('web_')) ? 'Войти' : '👤'; })()}</button>
+          <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
         </div>
       </div>
 
