@@ -407,8 +407,9 @@ const ChallengePage = () => {
   if (screen === 'menu') {
     return (
       <div className="challenge-page">
+        <div className="challenge-header-wrap">
+        <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль</span></div>
         <div className="challenge-header">
-          <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль</span></div>
           <button className="header-button" onClick={() => navigate('/')}>←</button>
           <div className="header-right">
             <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
@@ -475,8 +476,9 @@ const ChallengePage = () => {
   if (screen === 'join_by_link') {
     return (
       <div className="challenge-page">
+        <div className="challenge-header-wrap">
+        <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль</span></div>
         <div className="challenge-header">
-          <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
             <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
@@ -538,13 +540,15 @@ const ChallengePage = () => {
   if (screen === 'lobby') {
     return (
       <div className="challenge-page">
+        <div className="challenge-header-wrap">
+        <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: {room?.code}</span></div>
         <div className="challenge-header">
-          <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: {room?.code}</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
             <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
             {chatBell}
           </div>
+        </div>
         </div>
         <div className="challenge-content">
           <div className="lobby-card">
@@ -600,13 +604,15 @@ const ChallengePage = () => {
   if (screen === 'playing') {
     return (
       <div className="challenge-page">
+        <div className="challenge-header-wrap">
+        <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: раунд {room?.current_round}</span></div>
         <div className="challenge-header">
-          <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: раунд {room?.current_round}</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
             <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
             {chatBell}
           </div>
+        </div>
         </div>
         <div className="challenge-content">
           <div className="task-card">
@@ -658,13 +664,15 @@ const ChallengePage = () => {
     const sorted = [...(room?.players || [])].sort((a, b) => (b.wins || 0) - (a.wins || 0));
     return (
       <div className="challenge-page">
+        <div className="challenge-header-wrap">
+        <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: раунд {room?.current_round}</span></div>
         <div className="challenge-header">
-          <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: раунд {room?.current_round}</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
             <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
             {chatBell}
           </div>
+        </div>
         </div>
         <div className="challenge-content">
           <div className="result-card">
@@ -715,13 +723,15 @@ const ChallengePage = () => {
     const winner = sorted[0];
     return (
       <div className="challenge-page">
+        <div className="challenge-header-wrap">
+        <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: итоги</span></div>
         <div className="challenge-header">
-          <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: итоги</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
             <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
             {chatBell}
           </div>
+        </div>
         </div>
         <div className="challenge-content">
           <div className="result-card final">
