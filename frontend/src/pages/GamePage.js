@@ -164,7 +164,7 @@ const GamePage = () => {
         <button className="header-button" onClick={() => navigate('/')}>
           ←
         </button>
-        <span className="header-nick">{localStorage.getItem('username') || ''}</span>
+        <span className="header-nick" />
         <button className="header-button" onClick={() => {
           const yid = localStorage.getItem('yandexId') || '';
           const uid = localStorage.getItem('userId') || '';
