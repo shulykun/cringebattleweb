@@ -22,7 +22,7 @@ const LeaderboardPage = () => {
   return (
     <div className="leaderboard-page">
       <div className="leaderboard-header">
-        <button className="header-button" onClick={() => navigate('/duel')}>←</button>
+        <button className="header-button" onClick={() => navigate('/')}>←</button>
         <img src="/logo.jpg" alt="" className="header-logo-centered" />
       </div>
       <div className="leaderboard-content">
