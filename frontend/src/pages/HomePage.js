@@ -60,6 +60,15 @@ const HomePage = () => {
             <span className="stat-label">режима</span>
           </div>
         </div>
+
+        {/* Leaderboard link */}
+        <button className="home-button leaderboard-link" onClick={() => navigate('/leaderboard')}>
+          <span className="button-icon">🏆</span>
+          <span className="button-text">
+            <span className="button-title">Таблица лидеров</span>
+            <span className="button-desc">Рейтинг игроков</span>
+          </span>
+        </button>
       </div>
     </div>
   );

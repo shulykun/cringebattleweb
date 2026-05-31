@@ -15,6 +15,7 @@
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
 }
 
 .challenge-title {
@@ -853,4 +854,14 @@
   .code-input { letter-spacing: normal; font-size: 1rem; }
   .nickname-field .code-input { letter-spacing: normal; font-size: 1rem; }
   .players-selector { justify-content: center; }
+}
+.header-logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: contain;
+  pointer-events: none;
 }

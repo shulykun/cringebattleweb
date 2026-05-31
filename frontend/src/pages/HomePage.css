@@ -106,6 +106,14 @@
 .home-button.duel:hover {
   box-shadow: 0 12px 32px rgba(245, 87, 108, 0.5);
 }
+.leaderboard-link {
+  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+  box-shadow: 0 8px 24px rgba(167, 139, 250, 0.3);
+  margin-top: 12px;
+}
+.leaderboard-link:hover {
+  box-shadow: 0 12px 32px rgba(167, 139, 250, 0.5);
+}
 .button-icon {
   font-size: 1.8rem;
   flex-shrink: 0;

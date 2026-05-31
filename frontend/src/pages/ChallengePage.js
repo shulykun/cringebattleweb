@@ -399,6 +399,7 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
+          <img src="/logo.jpg" alt="" className="header-logo" />
           <button className="header-button" onClick={() => navigate('/')}>←</button>
           <span className="header-nick">{localStorage.getItem("username") || ""}</span>
           <button className="header-button" onClick={() => {
@@ -471,6 +472,7 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
+          <img src="/logo.jpg" alt="" className="header-logo" />
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <span className="header-nick">{localStorage.getItem("username") || ""}</span>
           <div />
@@ -531,6 +533,7 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
+          <img src="/logo.jpg" alt="" className="header-logo" />
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <span className="header-nick">🏠 {room?.code}</span>
           {chatBell}
@@ -590,6 +593,7 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
+          <img src="/logo.jpg" alt="" className="header-logo" />
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <span className="header-nick">⚔️ Раунд {room?.current_round}</span>
           {chatBell}
@@ -645,6 +649,7 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
+          <img src="/logo.jpg" alt="" className="header-logo" />
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <span className="header-nick">📊 Раунд {room?.current_round}</span>
           {chatBell}
@@ -699,6 +704,7 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
+          <img src="/logo.jpg" alt="" className="header-logo" />
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <span className="header-nick">🏆 Итоги</span>
           {chatBell}
