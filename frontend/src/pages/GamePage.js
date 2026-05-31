@@ -120,6 +120,11 @@ const GamePage = () => {
       setMessages([...previousPair, userMessage]);
       
       const response = await sendMessage(userId, userText);
+      if (!response.response) {
+        setLoading(false);
+        setMessages([...previousPair, userMessage, { type: 'game', text: 'Ошибка: нет ответа от сервера', buttons: [] }]);
+        return;
+      }
       // Добавляем ответ от игры
       const gameMessage = {
         type: 'game',
