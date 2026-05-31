@@ -409,9 +409,7 @@ const ChallengePage = () => {
       <div className="challenge-page">
         <div className="challenge-header">
                     <button className="header-button" onClick={() => navigate('/')}>←</button>
-          <div className="header-right">
-            <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
-          </div>
+          <button className="header-button" style={{marginLeft:'auto'}} onClick={() => navigate('/profile')}>👤</button>
         </div>
         <div className="challenge-menu">
           {isYandexUser ? (
@@ -476,10 +474,7 @@ const ChallengePage = () => {
       <div className="challenge-page">
         <div className="challenge-header">
                     <button className="header-button" onClick={handleBackToMenu}>←</button>
-          <div className="header-right">
-            <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
-            <div />
-          </div>
+          <button className="header-button" style={{marginLeft:'auto'}} onClick={() => navigate('/profile')}>👤</button>
         </div>
         <div className="challenge-content" style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
           <div className="join-duel-screen">
@@ -538,10 +533,8 @@ const ChallengePage = () => {
       <div className="challenge-page">
         <div className="challenge-header">
                     <button className="header-button" onClick={handleBackToMenu}>←</button>
-          <div className="header-right">
-            <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
+          <button className="header-button" style={{marginLeft:'auto'}} onClick={() => navigate('/profile')}>👤</button>
             {chatBell}
-          </div>
         </div>
         <div className="challenge-content">
           <div className="lobby-card">
@@ -599,10 +592,8 @@ const ChallengePage = () => {
       <div className="challenge-page">
         <div className="challenge-header">
                     <button className="header-button" onClick={handleBackToMenu}>←</button>
-          <div className="header-right">
-            <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
+          <button className="header-button" style={{marginLeft:'auto'}} onClick={() => navigate('/profile')}>👤</button>
             {chatBell}
-          </div>
         </div>
         <div className="challenge-content">
           <div className="task-card">
@@ -656,10 +647,8 @@ const ChallengePage = () => {
       <div className="challenge-page">
         <div className="challenge-header">
                     <button className="header-button" onClick={handleBackToMenu}>←</button>
-          <div className="header-right">
-            <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
+          <button className="header-button" style={{marginLeft:'auto'}} onClick={() => navigate('/profile')}>👤</button>
             {chatBell}
-          </div>
         </div>
         <div className="challenge-content">
           <div className="result-card">
@@ -712,10 +701,8 @@ const ChallengePage = () => {
       <div className="challenge-page">
         <div className="challenge-header">
                     <button className="header-button" onClick={handleBackToMenu}>←</button>
-          <div className="header-right">
-            <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
+          <button className="header-button" style={{marginLeft:'auto'}} onClick={() => navigate('/profile')}>👤</button>
             {chatBell}
-          </div>
         </div>
         <div className="challenge-content">
           <div className="result-card final">
