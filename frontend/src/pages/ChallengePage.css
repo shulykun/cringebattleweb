@@ -876,6 +876,8 @@
   align-items: center;
   gap: 8px;
   pointer-events: none;
+  width: 0;
+  overflow: visible;
 }
 .header-center-text {
   font-size: 0.85rem;
