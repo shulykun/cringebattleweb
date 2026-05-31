@@ -28,7 +28,7 @@ const HomePage = () => {
         <div className="home-logo">
           <img src="/logo.jpg" alt="Бой с кринжем" className="logo-img" />
           <h1 className="home-title">Бой с кринжем</h1>
-          <p className="home-tagline">Попадай в неловкие ситуации и выходи из них с блеском!</p>
+          <p className="home-tagline">«Бой с кринжем» — игра с Алисой, вся информация об игре и рейтингах</p>
         </div>
 
         {/* Buttons */}
