@@ -154,7 +154,7 @@ const ChallengePage = () => {
         setScreen(allAnswered ? 'round_result' : 'playing');
         startPolling(id);
       } else if (data.room_status === 'finished') {
-        setScreen('final');
+        setScreen('final'); new Audio('/sounds/win.mp3').play().catch(() => {});
       } else {
         clearRoomId();
       }
@@ -184,7 +184,7 @@ const ChallengePage = () => {
       }
       // Игра завершена
       if (data.room_status === 'finished' && screenRef.current !== 'final') {
-        setScreen('final');
+        setScreen('final'); new Audio('/sounds/win.mp3').play().catch(() => {});
         stopPolling();
       }
     } catch (e) {
@@ -210,7 +210,7 @@ const ChallengePage = () => {
   const handleJoin = async () => {
     if (!joinCode.trim()) return;
     setLoading(true); setError('');
-    reachGoal('duel_join');
+    reachGoal('duel_join'); new Audio('/sounds/join.mp3').play().catch(() => {});
     if (nickname) { localStorage.setItem('nickname', nickname); localStorage.setItem('username', nickname); }
     try {
       // Если не авторизован — pseudo-login по нику
@@ -248,7 +248,7 @@ const ChallengePage = () => {
     try {
       const data = await duel2Start(userId, room.room_id);
       if (data.status === 'error') { setError(data.message); setLoading(false); return; }
-      updateRoom(data); setScreen('playing');
+      updateRoom(data); setScreen('playing'); new Audio('/sounds/round.mp3').play().catch(() => {});
     } catch (e) { setError('Ошибка при старте'); }
     setLoading(false);
   };
@@ -257,7 +257,7 @@ const ChallengePage = () => {
   const handleAnswer = async () => {
     if (!answer.trim() || answer.trim().length < 3) return;
     setLoading(true); setError('');
-    reachGoal('duel_answer');
+    reachGoal('duel_answer'); new Audio('/sounds/send.mp3').play().catch(() => {});
     try {
       const data = await duel2Answer(userId, room.room_id, answer.trim());
       if (data.status === 'error') { setError(data.message); setLoading(false); return; }
@@ -285,7 +285,7 @@ const ChallengePage = () => {
     reachGoal('duel_finish');
     try {
       const data = await duel2Finish(userId, room.room_id);
-      updateRoom(data); setScreen('final'); stopPolling();
+      updateRoom(data); setScreen('final'); new Audio('/sounds/win.mp3').play().catch(() => {}); stopPolling();
     } catch (e) { setError('Ошибка'); }
     setLoading(false);
   };

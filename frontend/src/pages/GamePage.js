@@ -64,6 +64,7 @@ const GamePage = () => {
     
     // Очищаем кнопки сразу при нажатии
     setCurrentButtons([]);
+    new Audio('/sounds/click.mp3').play().catch(() => {});
 
     // Сообщение пользователя (нажатие кнопки)
     const userMessage = {
@@ -92,6 +93,7 @@ const GamePage = () => {
 
       // Сохраняем только последние 2 пары: предыдущая пара + текущая пара
       setMessages([...previousPair, userMessage, gameMessage]);
+      new Audio('/sounds/receive.mp3').play().catch(() => {});
       // Сохраняем кнопки для отображения под формой ввода
       setCurrentButtons(gameMessage.buttons || []);
       await loadScore(); reachGoal('solo_round_complete');
@@ -154,6 +156,7 @@ const GamePage = () => {
 
       // Сохраняем только последние 2 пары: предыдущая пара + текущая пара
       setMessages([...previousPair, userMessage, gameMessage]);
+      new Audio('/sounds/receive.mp3').play().catch(() => {});
       // Сохраняем кнопки для отображения под формой ввода
       setCurrentButtons(gameMessage.buttons || []);
       await loadScore(); reachGoal('solo_round_complete');
