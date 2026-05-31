@@ -80,6 +80,10 @@
   padding: 40px 20px;
   gap: 20px;
 }
+.challenge-menu .challenge-card {
+  min-width: 340px;
+}
+}
 
 /* ── Glass card ───────────────────────── */
 .challenge-card,
