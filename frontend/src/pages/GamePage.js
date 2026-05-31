@@ -164,7 +164,8 @@ const GamePage = () => {
         <button className="header-button" onClick={() => navigate('/')}>
           ←
         </button>
-        <span className="header-nick" />
+        <img src="/logo.jpg" alt="" className="header-logo" style={{position:'absolute',left:'50%',transform:'translateX(-50%)',width:'32px',height:'32px',borderRadius:'6px',objectFit:'contain',pointerEvents:'none'}} />
+        <span className="header-nick">{localStorage.getItem('username') || ''}</span>
         <button className="header-button" onClick={() => {
           const yid = localStorage.getItem('yandexId') || '';
           const uid = localStorage.getItem('userId') || '';
