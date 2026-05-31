@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { duel2Create, duel2Accept, duel2Start, duel2Answer, duel2Next, duel2Finish, duel2Message, duel2Status, duel2Rematch } from '../services/api';
 import { reachGoal } from '../services/metrica';
 import './ChallengePage.css';
+import AppHeader from '../components/AppHeader';
 
 const POLL_INTERVAL = 3000;
 
@@ -407,10 +408,7 @@ const ChallengePage = () => {
   if (screen === 'menu') {
     return (
       <div className="challenge-page">
-        <div className="challenge-header">
-                    <button className="header-button" onClick={() => navigate('/')}>←</button>
-          <button className="header-button" style={{marginLeft:'auto'}} onClick={() => navigate('/profile')}>👤</button>
-        </div>
+        <AppHeader backTo="/" rightButtons={[{ label: '👤', onClick: () => navigate('/profile') }]} />
         <div className="challenge-menu">
           {isYandexUser ? (
           <div className="challenge-card">
@@ -472,10 +470,7 @@ const ChallengePage = () => {
   if (screen === 'join_by_link') {
     return (
       <div className="challenge-page">
-        <div className="challenge-header">
-                    <button className="header-button" onClick={handleBackToMenu}>←</button>
-          <button className="header-button" style={{marginLeft:'auto'}} onClick={() => navigate('/profile')}>👤</button>
-        </div>
+        <AppHeader backTo="/" rightButtons={[{ label: '👤', onClick: () => navigate('/profile') }]} />
         <div className="challenge-content" style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
           <div className="join-duel-screen">
             <img src="/logo.jpg" alt="" className="logo-img" />
@@ -531,11 +526,7 @@ const ChallengePage = () => {
   if (screen === 'lobby') {
     return (
       <div className="challenge-page">
-        <div className="challenge-header">
-                    <button className="header-button" onClick={handleBackToMenu}>←</button>
-          <button className="header-button" style={{marginLeft:'auto'}} onClick={() => navigate('/profile')}>👤</button>
-            {chatBell}
-        </div>
+        <AppHeader backTo="/" rightButtons={[{ label: '👤', onClick: () => navigate('/profile') }, { label: '💬', onClick: () => setShowChat(true) }]} />
         <div className="challenge-content">
           <div className="lobby-card">
             <h2>Комната {room?.code}</h2>
@@ -590,11 +581,7 @@ const ChallengePage = () => {
   if (screen === 'playing') {
     return (
       <div className="challenge-page">
-        <div className="challenge-header">
-                    <button className="header-button" onClick={handleBackToMenu}>←</button>
-          <button className="header-button" style={{marginLeft:'auto'}} onClick={() => navigate('/profile')}>👤</button>
-            {chatBell}
-        </div>
+        <AppHeader backTo="/" rightButtons={[{ label: '👤', onClick: () => navigate('/profile') }, { label: '💬', onClick: () => setShowChat(true) }]} />
         <div className="challenge-content">
           <div className="task-card">
             <div className="task-label">Ситуация:</div>
@@ -645,11 +632,7 @@ const ChallengePage = () => {
     const sorted = [...(room?.players || [])].sort((a, b) => (b.wins || 0) - (a.wins || 0));
     return (
       <div className="challenge-page">
-        <div className="challenge-header">
-                    <button className="header-button" onClick={handleBackToMenu}>←</button>
-          <button className="header-button" style={{marginLeft:'auto'}} onClick={() => navigate('/profile')}>👤</button>
-            {chatBell}
-        </div>
+        <AppHeader backTo="/" rightButtons={[{ label: '👤', onClick: () => navigate('/profile') }, { label: '💬', onClick: () => setShowChat(true) }]} />
         <div className="challenge-content">
           <div className="result-card">
             <h2 style={{marginBottom: '24px', marginTop: '8px'}}>Результаты раунда</h2>
@@ -699,11 +682,7 @@ const ChallengePage = () => {
     const winner = sorted[0];
     return (
       <div className="challenge-page">
-        <div className="challenge-header">
-                    <button className="header-button" onClick={handleBackToMenu}>←</button>
-          <button className="header-button" style={{marginLeft:'auto'}} onClick={() => navigate('/profile')}>👤</button>
-            {chatBell}
-        </div>
+        <AppHeader backTo="/" rightButtons={[{ label: '👤', onClick: () => navigate('/profile') }, { label: '💬', onClick: () => setShowChat(true) }]} />
         <div className="challenge-content">
           <div className="result-card final">
             <div className="result-banner win">
