@@ -54,7 +54,7 @@ const UserPage = () => {
         <img src="/logo.jpg" alt="" className="header-logo" />
       </div>
       <div className="user-content">
-        <div className="user-avatar">
+        <div className="profile-avatar">
           <span className="avatar-emoji">😎</span>
         </div>
         <div className="user-name">{user.nickname || 'Игрок'}</div>
