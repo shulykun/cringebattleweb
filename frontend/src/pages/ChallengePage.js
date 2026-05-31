@@ -408,8 +408,7 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
-          <img src="/logo.jpg" alt="" style={{position:"absolute",left:"50%",top:"50%",transform:"translate(-50%,-50%)",width:"32px",height:"32px",borderRadius:"6px",objectFit:"contain",pointerEvents:"none"}} />
-          <button className="header-button" onClick={() => navigate('/')}>←</button>
+                    <button className="header-button" onClick={() => navigate('/')}>←</button>
           <div className="header-right">
             <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
           </div>
@@ -476,8 +475,7 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
-          <img src="/logo.jpg" alt="" style={{position:"absolute",left:"50%",top:"50%",transform:"translate(-50%,-50%)",width:"32px",height:"32px",borderRadius:"6px",objectFit:"contain",pointerEvents:"none"}} />
-          <button className="header-button" onClick={handleBackToMenu}>←</button>
+                    <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
             <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
             <div />
@@ -539,8 +537,7 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
-          <img src="/logo.jpg" alt="" style={{position:"absolute",left:"50%",top:"50%",transform:"translate(-50%,-50%)",width:"32px",height:"32px",borderRadius:"6px",objectFit:"contain",pointerEvents:"none"}} />
-          <button className="header-button" onClick={handleBackToMenu}>←</button>
+                    <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
             <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
             {chatBell}
@@ -601,8 +598,7 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
-          <img src="/logo.jpg" alt="" style={{position:"absolute",left:"50%",top:"50%",transform:"translate(-50%,-50%)",width:"32px",height:"32px",borderRadius:"6px",objectFit:"contain",pointerEvents:"none"}} />
-          <button className="header-button" onClick={handleBackToMenu}>←</button>
+                    <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
             <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
             {chatBell}
@@ -659,8 +655,7 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
-          <img src="/logo.jpg" alt="" style={{position:"absolute",left:"50%",top:"50%",transform:"translate(-50%,-50%)",width:"32px",height:"32px",borderRadius:"6px",objectFit:"contain",pointerEvents:"none"}} />
-          <button className="header-button" onClick={handleBackToMenu}>←</button>
+                    <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
             <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
             {chatBell}
@@ -716,8 +711,7 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <div className="challenge-header">
-          <img src="/logo.jpg" alt="" style={{position:"absolute",left:"50%",top:"50%",transform:"translate(-50%,-50%)",width:"32px",height:"32px",borderRadius:"6px",objectFit:"contain",pointerEvents:"none"}} />
-          <button className="header-button" onClick={handleBackToMenu}>←</button>
+                    <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
             <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
             {chatBell}
