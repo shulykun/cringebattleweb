@@ -28,6 +28,8 @@
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.7);
   font-weight: 600;
+  text-align: right;
+  min-width: 60px;
 }
 
 .header-button {
