@@ -346,39 +346,49 @@
 }
 
 .score-title {
-  font-size: 1.1rem;
-  color: #fff;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.4);
   margin-bottom: 20px;
   text-align: center;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .score-content {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .score-item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  border-left: 3px solid #a78bfa;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.2s;
+}
+
+.score-item:hover {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .score-label {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.35);
   font-weight: 500;
 }
 
 .score-value {
-  font-size: 1.1rem;
-  color: #a78bfa;
+  font-size: 1.4rem;
+  color: #fff;
   font-weight: 700;
+  line-height: 1.2;
 }
 
 .score-value.stress {
