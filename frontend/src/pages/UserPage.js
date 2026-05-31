@@ -50,7 +50,6 @@ const UserPage = () => {
     <div className="user-page">
       <div className="user-header">
         <button className="header-button" onClick={() => navigate(-1)}>←</button>
-        <span className="header-title">{user.nickname || 'Игрок'}</span>
         <img src="/logo.jpg" alt="" className="header-logo" />
       </div>
       <div className="user-content">
