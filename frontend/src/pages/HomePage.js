@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { reachGoal } from '../services/metrica';
 import './HomePage.css';
 
 import { reachGoal } from '../services/metrica';
