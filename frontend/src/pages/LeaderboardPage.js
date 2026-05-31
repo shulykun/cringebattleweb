@@ -46,7 +46,7 @@ const LeaderboardPage = () => {
                   <td className="rank">
                     {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}
                   </td>
-                  <td className="nickname">{row.nickname}</td>
+                  <td className="nickname">{row.nickname || 'Игрок'}</td>
                   <td className="score">{row.sum_grade}</td>
                   <td className="avg">{row.avg_grade}</td>
                   <td className="games">{row.game_count}</td>
