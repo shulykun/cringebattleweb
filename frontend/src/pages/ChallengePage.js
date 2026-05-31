@@ -411,7 +411,7 @@ const ChallengePage = () => {
           <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль</span></div>
           <button className="header-button" onClick={() => navigate('/')}>←</button>
           <div className="header-right">
-            <button className="header-button" onClick={() => { const yid = localStorage.getItem('yandexId') || ''  const uid = localStorage.getItem('userId') || ''  const isPseudo = !yid || yid.startsWith('guest_') || yid.startsWith('pseudo_') || uid.startsWith('web_')  if (isPseudo) navigate('/login')  else navigate('/profile') }}>👤</button>
+            <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
           </div>
         </div>
         <div className="challenge-menu">
@@ -479,7 +479,7 @@ const ChallengePage = () => {
           <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
-            <button className="header-button" onClick={() => { const yid = localStorage.getItem('yandexId') || ''  const uid = localStorage.getItem('userId') || ''  const isPseudo = !yid || yid.startsWith('guest_') || yid.startsWith('pseudo_') || uid.startsWith('web_')  if (isPseudo) navigate('/login')  else navigate('/profile') }}>👤</button>
+            <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
             <div />
           </div>
         </div>
@@ -542,7 +542,7 @@ const ChallengePage = () => {
           <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: {room?.code}</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
-            <button className="header-button" onClick={() => { const yid = localStorage.getItem('yandexId') || ''  const uid = localStorage.getItem('userId') || ''  const isPseudo = !yid || yid.startsWith('guest_') || yid.startsWith('pseudo_') || uid.startsWith('web_')  if (isPseudo) navigate('/login')  else navigate('/profile') }}>👤</button>
+            <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
             {chatBell}
           </div>
         </div>
@@ -604,7 +604,7 @@ const ChallengePage = () => {
           <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: раунд {room?.current_round}</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
-            <button className="header-button" onClick={() => { const yid = localStorage.getItem('yandexId') || ''  const uid = localStorage.getItem('userId') || ''  const isPseudo = !yid || yid.startsWith('guest_') || yid.startsWith('pseudo_') || uid.startsWith('web_')  if (isPseudo) navigate('/login')  else navigate('/profile') }}>👤</button>
+            <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
             {chatBell}
           </div>
         </div>
@@ -662,7 +662,7 @@ const ChallengePage = () => {
           <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: раунд {room?.current_round}</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
-            <button className="header-button" onClick={() => { const yid = localStorage.getItem('yandexId') || ''  const uid = localStorage.getItem('userId') || ''  const isPseudo = !yid || yid.startsWith('guest_') || yid.startsWith('pseudo_') || uid.startsWith('web_')  if (isPseudo) navigate('/login')  else navigate('/profile') }}>👤</button>
+            <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
             {chatBell}
           </div>
         </div>
@@ -719,7 +719,7 @@ const ChallengePage = () => {
           <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: итоги</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
           <div className="header-right">
-            <button className="header-button" onClick={() => { const yid = localStorage.getItem('yandexId') || ''  const uid = localStorage.getItem('userId') || ''  const isPseudo = !yid || yid.startsWith('guest_') || yid.startsWith('pseudo_') || uid.startsWith('web_')  if (isPseudo) navigate('/login')  else navigate('/profile') }}>👤</button>
+            <button className="header-button" onClick={() => navigate('/profile')}>👤</button>
             {chatBell}
           </div>
         </div>
