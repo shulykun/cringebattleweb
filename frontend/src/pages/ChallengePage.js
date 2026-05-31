@@ -715,7 +715,7 @@ const ChallengePage = () => {
         <div className="challenge-header">
           <div className="header-center"><img src="/logo.jpg" alt="" className="header-logo" /><span className="header-center-text">Дуэль: итоги</span></div>
           <button className="header-button" onClick={handleBackToMenu}>←</button>
-          <span className="header-nick">🏆 Итоги</span>
+          <span className="header-nick" />
           {chatBell}
         </div>
         <div className="challenge-content">
