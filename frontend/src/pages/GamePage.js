@@ -6,7 +6,12 @@ import './GamePage.css';
 
 const GamePage = () => {
   const [userId] = useState(() => localStorage.getItem('userId') || '');
-  const [messages, setMessages] = useState([]); // История сообщений
+  const [messages, setMessages] = useState(() => {
+    try {
+      const saved = localStorage.getItem('gameMessages');
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
   const [scoreData, setScoreData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [inputText, setInputText] = useState('');
@@ -30,6 +35,14 @@ const GamePage = () => {
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Save last pair to localStorage
+  useEffect(() => {
+    if (messages.length >= 2) {
+      const lastPair = messages.slice(-2);
+      localStorage.setItem('gameMessages', JSON.stringify(lastPair));
+    }
   }, [messages]);
 
   const loadScore = async () => {
