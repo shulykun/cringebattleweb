@@ -161,10 +161,10 @@ const GamePage = () => {
   return (
     <div className="game-page">
       <div className="game-header">
+        <img src="/logo.jpg" alt="" style={{position:'absolute',left:'50%',transform:'translateX(-50%)',width:'32px',height:'32px',borderRadius:'6px',objectFit:'contain',pointerEvents:'none'}} />
         <button className="header-button" onClick={() => navigate('/')}>
           ←
         </button>
-        <img src="/logo.jpg" alt="" className="header-logo" style={{position:'absolute',left:'50%',transform:'translateX(-50%)',width:'32px',height:'32px',borderRadius:'6px',objectFit:'contain',pointerEvents:'none'}} />
         <div style={{display:'flex',alignItems:'center',gap:'8px',marginLeft:'auto'}}>
           <span className="header-nick">{localStorage.getItem('username') || ''}</span>
           <button className="header-button" onClick={() => {
