@@ -122,3 +122,4 @@
   color: rgba(255, 255, 255, 0.4);
   font-size: 0.85rem;
 }
+.nickname-link { color: #fff; text-decoration: none; } .nickname-link:hover { color: #a78bfa; }

@@ -6,6 +6,7 @@ import GamePage from './pages/GamePage';
 import ProfilePage from './pages/ProfilePage';
 import ChallengePage from './pages/ChallengePage';
 import LeaderboardPage from './pages/LeaderboardPage';
+import UserPage from './pages/UserPage';
 import './App.css';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/game" element={<GamePage />} />
         <Route path="/duel" element={<ChallengePage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
+        <Route path="/user/:userId" element={<UserPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
