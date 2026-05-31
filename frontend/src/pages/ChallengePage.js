@@ -561,7 +561,7 @@ const ChallengePage = () => {
             ) : (
               <>
                 <div className="waiting-dots"><span></span><span></span><span></span></div>
-                <p>Ожидание игроков...</p>
+                <p style={{color:'rgba(255,255,255,0.85)'}}>Ожидание игроков...</p>
               </>
             )}
             {isCreator && room?.players_count >= 2 && (
