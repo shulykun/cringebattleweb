@@ -85,6 +85,7 @@ const ProfilePage = () => {
 
         {/* Logout */}
         <button className="profile-logout" onClick={handleLogout}>Выйти</button>
+        <button className="profile-home" onClick={() => navigate('/')}>← На главную</button>
       </div>
     </div>
   );
