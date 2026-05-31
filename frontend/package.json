@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "axios": "^1.6.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.20.0",
-    "axios": "^1.6.2"
+    "react-helmet-async": "^3.0.0",
+    "react-router-dom": "^6.20.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -31,4 +32,3 @@
   },
   "proxy": "http://127.0.0.1:5000"
 }
-

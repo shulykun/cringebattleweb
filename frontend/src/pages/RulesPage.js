@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppHeader from '../components/AppHeader';
 import './RulesPage.css';
+import { Helmet } from 'react-helmet-async';
 
 const RulesPage = () => {
   const navigate = useNavigate();
@@ -9,6 +10,10 @@ const RulesPage = () => {
   return (
     <div className="rules-page">
       <AppHeader backTo="/" title="Правила" />
+      <Helmet>
+        <title>Правила — Бой с кринжем | Как играть</title>
+        <meta name="description" content="Правила игры Бой с кринжем. Команды для Алисы, онлайн-дуэли, рейтинги." />
+      </Helmet>
 
       <div className="rules-content">
         <div className="rules-intro">

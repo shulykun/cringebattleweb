@@ -4,6 +4,7 @@ import { duel2Create, duel2Accept, duel2Start, duel2Answer, duel2Next, duel2Fini
 import { reachGoal } from '../services/metrica';
 import './ChallengePage.css';
 import AppHeader from '../components/AppHeader';
+import { Helmet } from 'react-helmet-async';
 
 const POLL_INTERVAL = 3000;
 
@@ -409,6 +410,10 @@ const ChallengePage = () => {
     return (
       <div className="challenge-page">
         <AppHeader backTo="/" rightButtons={[{ label: '👤', onClick: () => navigate('/profile') }]} />
+        <Helmet>
+          <title>Дуэль — Бой с кринжем | Онлайн-игра с друзьями</title>
+          <meta name="description" content="Сразись с друзьями в онлайн-дуэли! Создай комнату или присоединись по коду." />
+        </Helmet>
         <div className="challenge-menu">
           {isYandexUser ? (
           <div className="challenge-card">

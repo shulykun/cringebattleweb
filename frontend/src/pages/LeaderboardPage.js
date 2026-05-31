@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { reachGoal } from '../services/metrica';
 import './LeaderboardPage.css';
+import { Helmet } from 'react-helmet-async';
 
 const LeaderboardPage = () => {
   const navigate = useNavigate();
@@ -22,6 +23,10 @@ const LeaderboardPage = () => {
   return (
     <div className="leaderboard-page">
       <div className="leaderboard-header">
+      <Helmet>
+        <title>Таблица лидеров — Бой с кринжем</title>
+        <meta name="description" content="Рейтинг игроков Бой с кринжем. Лучшие ответы, топ игроки, статистика." />
+      </Helmet>
         <button className="header-button" onClick={() => navigate('/')}>←</button>
         <img src="/logo.jpg" alt="" className="header-logo-centered" />
       </div>

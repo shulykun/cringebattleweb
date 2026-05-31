@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import { HelmetProvider } from 'react-helmet-async';
 
 // Error tracking
 window.onerror = (msg, source, lineno, colno, error) => {
@@ -18,7 +19,9 @@ window.addEventListener('unhandledrejection', (e) => {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <HelmetProvider>
+      <App />
+    </HelmetProvider>
   </React.StrictMode>
 );
 

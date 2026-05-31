@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getScore, sendMessage } from '../services/api';
 import AppHeader from '../components/AppHeader';
+import { Helmet } from 'react-helmet-async';
 import { reachGoal } from '../services/metrica';
 import './GamePage.css';
 
@@ -184,6 +185,10 @@ const GamePage = () => {
   return (
     <div className="game-page">
       <AppHeader backTo="/" rightButtons={[{ label: '👤', onClick: () => navigate('/profile') }]} />
+      <Helmet>
+        <title>Играть — Бой с кринжем | Игра с Алисой</title>
+        <meta name="description" content="Попадай в неловкие ситуации и выходи из них с блеском! Одиночная игра с AI-судьёй." />
+      </Helmet>
 
       <div className="game-content">
         <div className="game-chat-container">
