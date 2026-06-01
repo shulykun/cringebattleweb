@@ -137,7 +137,18 @@ const ChallengePage = () => {
 
   const updateRoom = (data) => {
     if (data.status === 'success' || data.room_id) {
+      const prevCount = room?.players_count || 0;
       setRoom(data);
+      // Browser notification: new player joined
+      if (data.players_count > prevCount && prevCount > 0) {
+        const diff = data.players_count - prevCount;
+        if (Notification.permission === 'granted') {
+          new Notification('Бой с кринжем', {
+            body: `Нов${diff === 1 ? 'ый игрок' : 'ых игроков'}: +${diff} (${data.players_count}/${data.max_players})`,
+            icon: '/logo.jpg'
+          });
+        }
+      }
       return true;
     }
     return false;
@@ -198,6 +209,9 @@ const ChallengePage = () => {
   const handleCreate = async () => {
     setLoading(true); setError('');
     reachGoal('duel_create');
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
     if (nickname) { localStorage.setItem('nickname', nickname); localStorage.setItem('username', nickname); }
     try {
       const data = await duel2Create(userId, nickname, maxPlayers);
