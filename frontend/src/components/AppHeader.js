@@ -12,15 +12,14 @@ const AppHeader = ({ backTo = '/', title, logo = true, rightButtons = [] }) => {
         {logo && <img src="/logo.jpg" alt="" className="app-header-logo" />}
         {title && <span className="app-header-title">{title}</span>}
       </div>
-      {rightButtons.length > 0 && (
-        <div className="app-header-right">
+      <div className="app-header-right">
+          <button className="app-header-btn app-header-feedback" onClick={() => navigate('/feedback')}>✉️</button>
           {rightButtons.map((btn, i) => (
             <button key={i} className="app-header-btn" onClick={btn.onClick}>
               {btn.label}
             </button>
           ))}
         </div>
-      )}
     </div>
   );
 };

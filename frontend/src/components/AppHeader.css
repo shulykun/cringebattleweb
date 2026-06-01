@@ -81,3 +81,7 @@
   .app-header-back { left: 16px; padding: 6px 10px; }
   .app-header-right { right: 16px; }
 }
+.app-header-feedback {
+  padding: 6px 10px;
+  font-size: 0.75rem;
+}

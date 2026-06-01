@@ -8,8 +8,9 @@ import './FeedbackPage.css';
 const FeedbackPage = () => {
   const navigate = useNavigate();
   const [name, setName] = useState('');
+  const [contact, setContact] = useState('');
   const [message, setMessage] = useState('');
-  const [type, setType] = useState('feedback');
+  const [type, setType] = useState('bug');
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
@@ -26,7 +27,8 @@ const FeedbackPage = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: name.trim() || 'Аноним',
+          name: name.trim(),
+          contact: contact.trim(),
           message: message.trim(),
           type
         })
@@ -61,29 +63,36 @@ const FeedbackPage = () => {
         ) : (
           <form className="feedback-form" onSubmit={handleSubmit}>
             <div className="feedback-type">
-              <button type="button" className={`type-btn ${type === 'feedback' ? 'active' : ''}`} onClick={() => setType('feedback')}>
-                💬 Отзыв
-              </button>
               <button type="button" className={`type-btn ${type === 'bug' ? 'active' : ''}`} onClick={() => setType('bug')}>
-                🐛 Баг
+                🐛 Проблема
               </button>
               <button type="button" className={`type-btn ${type === 'idea' ? 'active' : ''}`} onClick={() => setType('idea')}>
-                💡 Идея
+                💡 Предложение
               </button>
             </div>
 
             <input
               type="text"
               className="feedback-input"
-              placeholder="Ваше имя (необязательно)"
+              placeholder="Ваше имя"
               value={name}
               onChange={(e) => setName(e.target.value)}
               maxLength={50}
+              required
+            />
+
+            <input
+              type="text"
+              className="feedback-input"
+              placeholder="Контакт (email, Telegram, телефон)"
+              value={contact}
+              onChange={(e) => setContact(e.target.value)}
+              maxLength={100}
             />
 
             <textarea
               className="feedback-textarea"
-              placeholder={type === 'bug' ? 'Опишите проблему...' : type === 'idea' ? 'Расскажите идею...' : 'Напишите отзыв...'}
+              placeholder={type === 'bug' ? 'Опишите проблему...' : 'Расскажите предложение...'}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               maxLength={1000}
