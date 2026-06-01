@@ -8,6 +8,7 @@ import ChallengePage from './pages/ChallengePage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import UserPage from './pages/UserPage';
 import RulesPage from './pages/RulesPage';
+import FeedbackPage from './pages/FeedbackPage';
 import './App.css';
 import { trackPageView } from './services/metrica';
 
@@ -24,6 +25,7 @@ function App() {
         <Route path="/user/:userId" element={<UserPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/rules" element={<RulesPage />} />
+        <Route path="/feedback" element={<FeedbackPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

@@ -80,6 +80,13 @@ const HomePage = () => {
             <span className="button-desc">Как играть и команды</span>
           </span>
         </button>
+        <button className="home-button feedback-link" onClick={() => { reachGoal('click_feedback'); navigate('/feedback'); }}>
+          <span className="button-icon">✉️</span>
+          <span className="button-text">
+            <span className="button-title">Обратная связь</span>
+            <span className="button-desc">Отзыв, баг или идея</span>
+          </span>
+        </button>
       </div>
     </div>
   );
