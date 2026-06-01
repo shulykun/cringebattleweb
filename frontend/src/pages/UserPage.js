@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { reachGoal } from '../services/metrica';
 import './UserPage.css';
 import AppHeader from '../components/AppHeader';
+import AppFooter from '../components/AppFooter';
 
 const UserPage = () => {
   const navigate = useNavigate();
@@ -78,6 +79,7 @@ const UserPage = () => {
           </div>
         </div>
       </div>
+      <AppFooter />
     </div>
   );
 };

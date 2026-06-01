@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppHeader from '../components/AppHeader';
+import AppFooter from '../components/AppFooter';
 import './RulesPage.css';
 import { Helmet } from 'react-helmet-async';
 
@@ -64,6 +65,7 @@ const RulesPage = () => {
           </div>
         </div>
       </div>
+      <AppFooter />
     </div>
   );
 };

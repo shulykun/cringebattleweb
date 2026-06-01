@@ -4,6 +4,7 @@ import { duel2Create, duel2Accept, duel2Start, duel2Answer, duel2Next, duel2Fini
 import { reachGoal } from '../services/metrica';
 import './ChallengePage.css';
 import AppHeader from '../components/AppHeader';
+import AppFooter from '../components/AppFooter';
 import { Helmet } from 'react-helmet-async';
 
 const POLL_INTERVAL = 3000;
@@ -402,6 +403,7 @@ const ChallengePage = () => {
         <div className="challenge-content" style={{alignItems:'center',justifyContent:'center',flex:1}}>
           <div className="waiting-dots"><span></span><span></span><span></span></div>
         </div>
+        <AppFooter />
       </div>
     );
   }
@@ -469,6 +471,7 @@ const ChallengePage = () => {
           {error && <div className="challenge-error">{error}</div>}
         </div>
       {chatOverlay}
+        <AppFooter />
       </div>
     );
   }
@@ -525,6 +528,7 @@ const ChallengePage = () => {
           <button className="leave-duel-btn" onClick={handleLeaveDuel}>Выйти из дуэли</button>
         </div>
       {chatOverlay}
+        <AppFooter />
       </div>
     );
   }
@@ -580,6 +584,7 @@ const ChallengePage = () => {
           <button className="leave-duel-btn" onClick={handleLeaveDuel}>Выйти из дуэли</button>
         </div>
       {chatOverlay}
+        <AppFooter />
       </div>
     );
   }
@@ -630,6 +635,7 @@ const ChallengePage = () => {
           <button className="leave-duel-btn" onClick={handleLeaveDuel}>Выйти из дуэли</button>
         </div>
       {chatOverlay}
+        <AppFooter />
       </div>
     );
   }
@@ -679,6 +685,7 @@ const ChallengePage = () => {
           </div>
         </div>
       {chatOverlay}
+        <AppFooter />
       </div>
     );
   }
@@ -753,6 +760,7 @@ const ChallengePage = () => {
             )}
           </div>
         </div>
+        <AppFooter />
       </div>
     );
   }

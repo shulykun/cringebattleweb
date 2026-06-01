@@ -13,7 +13,6 @@ const AppHeader = ({ backTo = '/', title, logo = true, rightButtons = [] }) => {
         {title && <span className="app-header-title">{title}</span>}
       </div>
       <div className="app-header-right">
-          <button className="app-header-btn app-header-feedback" onClick={() => navigate('/feedback')}>✉️</button>
           {rightButtons.map((btn, i) => (
             <button key={i} className="app-header-btn" onClick={btn.onClick}>
               {btn.label}

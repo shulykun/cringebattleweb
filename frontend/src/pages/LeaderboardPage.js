@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { reachGoal } from '../services/metrica';
 import './LeaderboardPage.css';
 import { Helmet } from 'react-helmet-async';
+import AppFooter from '../components/AppFooter';
 
 const LeaderboardPage = () => {
   const navigate = useNavigate();
@@ -63,6 +64,7 @@ const LeaderboardPage = () => {
           </table>
         )}
       </div>
+      <AppFooter />
     </div>
   );
 };

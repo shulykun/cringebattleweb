@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppHeader from '../components/AppHeader';
+import AppFooter from '../components/AppFooter';
 import { Helmet } from 'react-helmet-async';
 import { reachGoal } from '../services/metrica';
 import './FeedbackPage.css';
@@ -108,6 +109,7 @@ const FeedbackPage = () => {
           </form>
         )}
       </div>
+      <AppFooter />
     </div>
   );
 };

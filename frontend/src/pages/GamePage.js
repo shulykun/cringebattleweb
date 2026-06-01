@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getScore, sendMessage } from '../services/api';
 import AppHeader from '../components/AppHeader';
+import AppFooter from '../components/AppFooter';
 import { Helmet } from 'react-helmet-async';
 import { reachGoal } from '../services/metrica';
 import './GamePage.css';
@@ -325,6 +326,7 @@ const GamePage = () => {
           )}
         </div>
       </div>
+      <AppFooter />
     </div>
   );
 };
