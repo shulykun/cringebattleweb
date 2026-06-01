@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import GamePage from './pages/GamePage';
@@ -9,10 +9,12 @@ import LeaderboardPage from './pages/LeaderboardPage';
 import UserPage from './pages/UserPage';
 import RulesPage from './pages/RulesPage';
 import './App.css';
+import { trackPageView } from './services/metrica';
 
 function App() {
   return (
     <Router>
+      <MetricaTracker />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -26,6 +28,14 @@ function App() {
       </Routes>
     </Router>
   );
+}
+
+function MetricaTracker() {
+  const location = useLocation();
+  React.useEffect(() => {
+    trackPageView(location.pathname + location.search);
+  }, [location]);
+  return null;
 }
 
 export default App;

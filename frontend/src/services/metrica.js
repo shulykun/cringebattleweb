@@ -5,3 +5,9 @@ export function reachGoal(target) {
     window.ym(METRIKA_ID, 'reachGoal', target);
   }
 }
+
+export function trackPageView(path) {
+  if (typeof window !== 'undefined' && window.ym) {
+    window.ym(METRIKA_ID, 'hit', path);
+  }
+}
