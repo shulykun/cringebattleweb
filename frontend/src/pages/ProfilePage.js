@@ -81,6 +81,10 @@ const ProfilePage = () => {
             <span className="profile-btn-icon">🏆</span>
             <span className="profile-btn-text">Рейтинг</span>
           </button>
+          <button className="profile-btn myduels" onClick={() => { reachGoal('click_my_duels'); navigate('/my-duels'); }}>
+            <span className="profile-btn-icon">⚔️</span>
+            <span className="profile-btn-text">Мои дуэли</span>
+          </button>
         </div>
 
         {/* Logout */}

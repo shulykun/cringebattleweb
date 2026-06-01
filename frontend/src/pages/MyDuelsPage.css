@@ -1,0 +1,145 @@
+.myduels-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+}
+
+.myduels-content {
+  flex: 1;
+  padding: 24px;
+  max-width: 500px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.myduels-loading {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 40px;
+}
+
+.myduels-empty {
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.myduels-empty p {
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 20px;
+}
+
+.myduels-btn {
+  background: rgba(167, 139, 250, 0.2);
+  border: 1px solid rgba(167, 139, 250, 0.4);
+  color: #a78bfa;
+  padding: 12px 28px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.myduels-btn:hover {
+  background: rgba(167, 139, 250, 0.3);
+}
+
+.myduels-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.duel-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 16px;
+  border-left: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.duel-card.playing {
+  border-left-color: #a78bfa;
+}
+
+.duel-card.finished {
+  border-left-color: rgba(255, 255, 255, 0.15);
+}
+
+.duel-card.waiting {
+  border-left-color: #fbbf24;
+}
+
+.duel-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.duel-status {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.duel-date {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.duel-card-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.duel-info {
+  display: flex;
+  gap: 12px;
+}
+
+.duel-score {
+  font-size: 0.95rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+.duel-rank {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.duel-badge.win {
+  background: rgba(250, 204, 21, 0.15);
+  color: #fbbf24;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.duel-winner {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.duel-card-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 480px) {
+  .myduels-content { padding: 16px; }
+  .duel-card { padding: 14px; }
+}
