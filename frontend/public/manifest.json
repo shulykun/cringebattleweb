@@ -1,0 +1,25 @@
+{
+  "short_name": "Бой с кринжем",
+  "name": "Бой с кринжем — игра с Алисой",
+  "description": "Попадай в неловкие ситуации и выходи из них с блеском!",
+  "icons": [
+    {
+      "src": "/logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0f0c29",
+  "background_color": "#0f0c29",
+  "orientation": "portrait",
+  "lang": "ru"
+}
