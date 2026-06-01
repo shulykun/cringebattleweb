@@ -9,6 +9,7 @@ const AppFooter = () => {
     <div className="app-footer">
       <button className="footer-link" onClick={() => navigate('/rules')}>Правила</button>
       <button className="footer-link" onClick={() => navigate('/feedback')}>Обратная связь</button>
+      <button className="footer-link" onClick={() => navigate('/install')}>Установить</button>
     </div>
   );
 };

@@ -1,0 +1,81 @@
+.install-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+}
+
+.install-content {
+  flex: 1;
+  padding: 24px;
+  max-width: 500px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.install-card {
+  text-align: center;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+
+.install-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.install-card h2 {
+  color: #fff;
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+}
+
+.install-card p {
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.install-section {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.install-section h3 {
+  color: #a78bfa;
+  font-size: 0.95rem;
+  margin: 0 0 12px;
+}
+
+.install-steps {
+  margin: 0;
+  padding-left: 20px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  line-height: 1.8;
+}
+
+.install-steps strong {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.share-icon {
+  display: inline-block;
+  background: rgba(167, 139, 250, 0.2);
+  border-radius: 4px;
+  padding: 0 4px;
+}
+
+@media (max-width: 480px) {
+  .install-content { padding: 16px; }
+  .install-card, .install-section { padding: 16px; }
+}
