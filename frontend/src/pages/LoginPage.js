@@ -128,7 +128,7 @@ const LoginPage = () => {
           </div>
         ) : (
           <div className="otp-section">
-            <p className="otp-hint">Скажите Алисе «Дай код» и введите его здесь</p>
+            <p className="otp-hint">Скажите Алисе «Давай играть» или «Дай код» — она даст 6-значный код для входа</p>
             <div className="otp-form">
               <input
                 type="text"
