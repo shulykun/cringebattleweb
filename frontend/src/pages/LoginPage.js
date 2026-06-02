@@ -119,6 +119,8 @@ const LoginPage = () => {
               </>
             )}
           </button>
+        </div>
+
         <div className="login-divider">
           <span>или</span>
         </div>
