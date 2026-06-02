@@ -217,3 +217,10 @@
   margin: 0 0 8px;
   text-align: center;
 }
+.alice-badge {
+  text-align: center;
+  margin-top: 20px;
+}
+.alice-badge img {
+  height: 36px;
+}
