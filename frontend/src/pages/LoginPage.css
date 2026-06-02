@@ -210,3 +210,10 @@
 .otp-back-button:hover {
   color: rgba(255, 255, 255, 0.6);
 }
+.otp-subtitle {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+  text-align: center;
+}

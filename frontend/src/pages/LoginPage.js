@@ -128,6 +128,7 @@ const LoginPage = () => {
           </div>
         ) : (
           <div className="otp-section">
+            <h3 className="otp-subtitle">Вход по коду из колонки Алиса</h3>
             <p className="otp-hint">Запустите игру «Бой с кринжем» на колонке, скажите Алисе «Дай код» и введите его здесь</p>
             <div className="otp-form">
               <input
