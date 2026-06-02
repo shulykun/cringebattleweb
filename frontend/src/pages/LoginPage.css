@@ -177,20 +177,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
-  padding: 14px 20px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.95rem;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+  border: none;
+  border-radius: 14px;
+  color: #fff;
+  font-size: 1.05rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 8px 24px rgba(167, 139, 250, 0.35);
 }
 .otp-login-button:hover {
-  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(167, 139, 250, 0.5);
 }
 .otp-login-icon {
   font-size: 1.3rem;
