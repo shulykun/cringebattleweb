@@ -148,9 +148,6 @@ const LoginPage = () => {
                 {otpLoading ? '...' : '→'}
               </button>
             </div>
-            <button className="otp-back-button" onClick={() => { setShowOtp(false); setOtpCode(''); setError(''); }}>
-              ← Назад
-            </button>
           </div>
         )}
 
