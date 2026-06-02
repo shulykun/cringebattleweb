@@ -118,3 +118,43 @@
   color: rgba(255, 255, 255, 0.5);
   text-transform: lowercase;
 }
+.share-section {
+  text-align: center;
+  margin-top: 24px;
+}
+.share-title {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+.share-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.share-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: transform 0.1s;
+}
+.share-btn:hover {
+  transform: translateY(-1px);
+}
+.share-btn.telegram {
+  background: #2AABEE;
+  color: #fff;
+}
+.share-btn.vk {
+  background: #0077FF;
+  color: #fff;
+}
+.share-btn.copy {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.6);
+}

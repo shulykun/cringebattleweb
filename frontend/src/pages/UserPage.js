@@ -89,6 +89,24 @@ const UserPage = () => {
             <div className="stat-label">средний кринж</div>
           </div>
         </div>
+
+        <div className="share-section">
+          <div className="share-title">Поделиться профилем</div>
+          <div className="share-buttons">
+            <button className="share-btn telegram" onClick={() => {
+              const url = encodeURIComponent(window.location.href);
+              const text = encodeURIComponent(`Профиль ${user.nickname} в Бой с кринжем — #${user.rank} в рейтинге!`);
+              window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
+            }}>TG</button>
+            <button className="share-btn vk" onClick={() => {
+              const url = encodeURIComponent(window.location.href);
+              window.open(`https://vk.com/share.php?url=${url}`, '_blank');
+            }}>VK</button>
+            <button className="share-btn copy" onClick={() => {
+              navigator.clipboard.writeText(window.location.href);
+            }}>📋</button>
+          </div>
+        </div>
       </div>
       <AppFooter />
     </div>
