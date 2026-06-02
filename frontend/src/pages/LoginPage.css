@@ -166,3 +166,44 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+.login-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin-top: 20px;
+}
+.otp-login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.otp-login-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.otp-login-icon {
+  font-size: 1.3rem;
+}
+.otp-back-button {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  font-size: 0.8rem;
+  margin-top: 12px;
+  padding: 4px;
+}
+.otp-back-button:hover {
+  color: rgba(255, 255, 255, 0.6);
+}

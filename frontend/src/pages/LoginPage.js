@@ -10,6 +10,7 @@ const YANDEX_CLIENT_ID = process.env.REACT_APP_YANDEX_CLIENT_ID || '99cba34d4820
 const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showOtp, setShowOtp] = useState(false);
   const [otpCode, setOtpCode] = useState('');
   const [otpLoading, setOtpLoading] = useState(false);
   const navigate = useNavigate();
@@ -96,51 +97,62 @@ const LoginPage = () => {
           <div className="login-error">{error}</div>
         )}
 
-        <div className="login-form">
-          <button
-            type="button"
-            className="yandex-login-button"
-            onClick={handleYandexLogin}
-            disabled={loading}
-          >
-            {loading ? (
-              <span>Авторизация...</span>
-            ) : (
-              <>
-                <svg className="yandex-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm6.344 7.5h-2.5c-.276 0-.5.224-.5.5v8.5c0 .276.224.5.5.5h2.5c.276 0 .5-.224.5-.5V8c0-.276-.224-.5-.5-.5zM12 7.5c-2.481 0-4.5 2.019-4.5 4.5s2.019 4.5 4.5 4.5 4.5-2.019 4.5-4.5S14.481 7.5 12 7.5z"/>
-                </svg>
-                <span>Войти через Яндекс</span>
-              </>
-            )}
-          </button>
-        </div>
-
-        <div className="login-divider">
-          <span>или</span>
-        </div>
-
-        <div className="otp-section">
-          <p className="otp-hint">Скажите Алисе «Дай код» и введите его здесь</p>
-          <div className="otp-form">
-            <input
-              type="text"
-              className="otp-input"
-              placeholder="000000"
-              maxLength={6}
-              value={otpCode}
-              onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-              onKeyDown={(e) => e.key === 'Enter' && handleOtpLogin()}
-            />
+        {!showOtp ? (
+          <div className="login-buttons">
             <button
-              className="otp-button"
-              onClick={handleOtpLogin}
-              disabled={otpLoading || otpCode.length !== 6}
+              type="button"
+              className="yandex-login-button"
+              onClick={handleYandexLogin}
+              disabled={loading}
             >
-              {otpLoading ? '...' : '→'}
+              {loading ? (
+                <span>Авторизация...</span>
+              ) : (
+                <>
+                  <svg className="yandex-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm6.344 7.5h-2.5c-.276 0-.5.224-.5.5v8.5c0 .276.224.5.5.5h2.5c.276 0 .5-.224.5-.5V8c0-.276-.224-.5-.5-.5zM12 7.5c-2.481 0-4.5 2.019-4.5 4.5s2.019 4.5 4.5 4.5 4.5-2.019 4.5-4.5S14.481 7.5 12 7.5z"/>
+                  </svg>
+                  <span>Войти через Яндекс</span>
+                </>
+              )}
+            </button>
+
+            <button
+              type="button"
+              className="otp-login-button"
+              onClick={() => { setShowOtp(true); setError(''); }}
+            >
+              <span className="otp-login-icon">🗣</span>
+              <span>Войти по коду из колонки</span>
             </button>
           </div>
-        </div>
+        ) : (
+          <div className="otp-section">
+            <p className="otp-hint">Скажите Алисе «Дай код» и введите его здесь</p>
+            <div className="otp-form">
+              <input
+                type="text"
+                className="otp-input"
+                placeholder="000000"
+                maxLength={6}
+                value={otpCode}
+                onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                onKeyDown={(e) => e.key === 'Enter' && handleOtpLogin()}
+                autoFocus
+              />
+              <button
+                className="otp-button"
+                onClick={handleOtpLogin}
+                disabled={otpLoading || otpCode.length !== 6}
+              >
+                {otpLoading ? '...' : '→'}
+              </button>
+            </div>
+            <button className="otp-back-button" onClick={() => { setShowOtp(false); setOtpCode(''); setError(''); }}>
+              ← Назад
+            </button>
+          </div>
+        )}
 
         <button
           className="login-back-button"
