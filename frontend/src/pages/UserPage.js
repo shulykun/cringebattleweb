@@ -92,7 +92,7 @@ const UserPage = () => {
 
         {user.best_answer && (
           <div className="best-answer">
-            <div className="best-answer-label">⭐ Лучший ответ ({user.best_answer.grade}/100)</div>
+            <div className="best-answer-label">⭐ Лучший ответ ({Math.round(user.best_answer.grade / 10)}/10)</div>
             <div className="best-answer-task">{user.best_answer.task}</div>
             <div className="best-answer-text">«{user.best_answer.answer}»</div>
           </div>
