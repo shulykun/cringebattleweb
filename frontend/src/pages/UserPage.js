@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { reachGoal } from '../services/metrica';
+import { Helmet } from 'react-helmet-async';
 import './UserPage.css';
 import AppHeader from '../components/AppHeader';
 import AppFooter from '../components/AppFooter';
@@ -50,6 +51,16 @@ const UserPage = () => {
 
   return (
     <div className="user-page">
+      <Helmet>
+        <title>{user ? `${user.nickname} — Бой с кринжем` : 'Профиль игрока — Бой с кринжем'}</title>
+        <meta name="description" content={user ? `${user.nickname} — рейтинг ${user.rating || 0}, очки ${user.score || 0}. Профиль игрока в Бой с кринжем.` : 'Профиль игрока Бой с кринжем'} />
+        {user && (
+          <meta property="og:title" content={`${user.nickname} — Бой с кринжем`} />
+        )}
+        {user && (
+          <meta property="og:description" content={`${user.nickname} — рейтинг ${user.rating || 0}, ${user.total_games || 0} игр. Смотри профиль в Бой с кринжем.`} />
+        )}
+      </Helmet>
       <AppHeader backTo="/leaderboard" />
       <div className="user-content">
         <div className="profile-avatar">
