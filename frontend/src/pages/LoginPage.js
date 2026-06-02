@@ -15,7 +15,6 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Уже авторизован через Яндекс — на главную
     const userId = localStorage.getItem('userId');
     const yid = localStorage.getItem('yandexId') || '';
     const isPseudo = !yid || yid.startsWith('guest_') || yid.startsWith('pseudo_') || (userId || '').startsWith('web_');
@@ -23,7 +22,6 @@ const LoginPage = () => {
       navigate('/');
       return;
     }
-    // Яндекс OAuth callback
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
     if (code) {
@@ -93,9 +91,6 @@ const LoginPage = () => {
           <img src="/logo.jpg" alt="Бой с кринжем" className="logo-img" />
           <h1 className="login-title">Бой с кринжем</h1>
         </div>
-        <p className="login-subtitle">
-          Войдите через Яндекс
-        </p>
 
         {error && (
           <div className="login-error">{error}</div>
@@ -148,6 +143,7 @@ const LoginPage = () => {
         </div>
 
         <button
+          className="login-back-button"
           onClick={() => navigate('/')}
           disabled={loading}
         >
