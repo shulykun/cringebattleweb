@@ -10,6 +10,8 @@ const YANDEX_CLIENT_ID = process.env.REACT_APP_YANDEX_CLIENT_ID || '99cba34d4820
 const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [otpCode, setOtpCode] = useState('');
+  const [otpLoading, setOtpLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,6 +61,31 @@ const LoginPage = () => {
     window.location.href = yandexAuthUrl;
   };
 
+  const handleOtpLogin = async () => {
+    if (!otpCode || otpCode.length !== 6) return;
+    setOtpLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/auth/code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: otpCode })
+      });
+      const data = await res.json();
+      if (data.status === 'ok') {
+        reachGoal('login');
+        localStorage.setItem('userId', data.user_id);
+        localStorage.setItem('username', data.nickname);
+        navigate('/');
+      } else {
+        setError(data.message || 'Неверный код');
+      }
+    } catch {
+      setError('Ошибка подключения');
+    }
+    setOtpLoading(false);
+  };
+
   return (
     <div className="login-page">
       <div className="login-container">
@@ -92,10 +119,33 @@ const LoginPage = () => {
               </>
             )}
           </button>
+        <div className="login-divider">
+          <span>или</span>
+        </div>
+
+        <div className="otp-section">
+          <p className="otp-hint">Скажите Алисе «Дай код» и введите его здесь</p>
+          <div className="otp-form">
+            <input
+              type="text"
+              className="otp-input"
+              placeholder="000000"
+              maxLength={6}
+              value={otpCode}
+              onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+              onKeyDown={(e) => e.key === 'Enter' && handleOtpLogin()}
+            />
+            <button
+              className="otp-button"
+              onClick={handleOtpLogin}
+              disabled={otpLoading || otpCode.length !== 6}
+            >
+              {otpLoading ? '...' : '→'}
+            </button>
+          </div>
         </div>
 
         <button
-          className="login-back-button"
           onClick={() => navigate('/')}
           disabled={loading}
         >
