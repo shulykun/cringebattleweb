@@ -90,6 +90,14 @@ const UserPage = () => {
           </div>
         </div>
 
+        {user.best_answer && (
+          <div className="best-answer">
+            <div className="best-answer-label">⭐ Лучший ответ ({user.best_answer.grade}/100)</div>
+            <div className="best-answer-task">{user.best_answer.task}</div>
+            <div className="best-answer-text">«{user.best_answer.answer}»</div>
+          </div>
+        )}
+
         <div className="share-section">
           <div className="share-title">Поделиться профилем</div>
           <div className="share-buttons">

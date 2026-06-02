@@ -158,3 +158,29 @@
   background: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.6);
 }
+.best-answer {
+  background: rgba(250, 204, 21, 0.06);
+  border: 1px solid rgba(250, 204, 21, 0.15);
+  border-radius: 16px;
+  padding: 18px;
+  margin-top: 20px;
+  text-align: left;
+}
+.best-answer-label {
+  color: #fbbf24;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.best-answer-task {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+.best-answer-text {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
+  font-style: italic;
+  line-height: 1.5;
+}
