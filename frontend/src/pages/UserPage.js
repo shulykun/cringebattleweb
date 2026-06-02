@@ -53,12 +53,12 @@ const UserPage = () => {
     <div className="user-page">
       <Helmet>
         <title>{user ? `${user.nickname} — Бой с кринжем` : 'Профиль игрока — Бой с кринжем'}</title>
-        <meta name="description" content={user ? `${user.nickname} — рейтинг ${user.rating || 0}, очки ${user.score || 0}. Профиль игрока в Бой с кринжем.` : 'Профиль игрока Бой с кринжем'} />
+        <meta name="description" content={user ? `${user.nickname} — #${user.rank || '—'} в рейтинге, ${user.sum_grade || 0} очков, ${user.game_count || 0} игр.` : 'Профиль игрока Бой с кринжем'} />
         {user && (
           <meta property="og:title" content={`${user.nickname} — Бой с кринжем`} />
         )}
         {user && (
-          <meta property="og:description" content={`${user.nickname} — рейтинг ${user.rating || 0}, ${user.total_games || 0} игр. Смотри профиль в Бой с кринжем.`} />
+          <meta property="og:description" content={`${user.nickname} — #${user.rank || '—'} в рейтинге, ${user.sum_grade || 0} очков, ${user.game_count || 0} игр. Смотри профиль в Бой с кринжем.`} />
         )}
       </Helmet>
       <AppHeader backTo="/leaderboard" />
