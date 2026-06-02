@@ -56,7 +56,23 @@ const ChallengePage = () => {
 
   useEffect(() => {
     const codeFromUrl = searchParams.get('code');
-    // Если есть сохранённая комната — сначала восстановить
+    // Если есть код из ссылки — приоритет: перейти по приглашению
+    if (codeFromUrl) {
+      // Если есть активная комната — сначала очистить
+      if (roomId) clearRoomId();
+      setJoinCode(codeFromUrl);
+      setScreen('join_by_link');
+      fetch(`/api/duel2/info/${codeFromUrl}`)
+        .then(r => r.json())
+        .then(d => {
+          if (d.status === 'error') { setRoomNotFound(true); return; }
+          if (d.creator_nickname) setCreatorNick(d.creator_nickname);
+          if (d.players_count >= d.max_players) setRoomFull(true);
+        })
+        .catch(() => { setRoomNotFound(true); });
+      return;
+    }
+    // Если есть сохранённая комната — восстановить
     if (roomId) {
       setRestoring(true);
       restoreRoom(roomId).then(() => setRestoring(false)).catch(() => {
@@ -78,20 +94,6 @@ const ChallengePage = () => {
           setRestoring(false);
         }
       });
-      return;
-    }
-    // Если есть код из ссылки — экран ввода ника
-    if (codeFromUrl) {
-      setJoinCode(codeFromUrl);
-      setScreen('join_by_link');
-      fetch(`/api/duel2/info/${codeFromUrl}`)
-        .then(r => r.json())
-        .then(d => {
-          if (d.status === 'error') { setRoomNotFound(true); return; }
-          if (d.creator_nickname) setCreatorNick(d.creator_nickname);
-          if (d.players_count >= d.max_players) setRoomFull(true);
-        })
-        .catch(() => { setRoomNotFound(true); });
       return;
     }
     if (!userId) {
