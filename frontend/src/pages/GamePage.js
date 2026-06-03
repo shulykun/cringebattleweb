@@ -398,6 +398,11 @@ const GamePage = () => {
             <button className="game-guest-btn duel" onClick={() => navigate('/duel')}>⚔️ Онлайн дуэль</button>
           </div>
         )}
+        {!isGuest && (
+          <div className="game-guest-buttons">
+            <button className="game-guest-btn duel" onClick={() => navigate('/duel')}>⚔️ Онлайн дуэль</button>
+          </div>
+        )}
       </div>
       <AppFooter />
     </div>
