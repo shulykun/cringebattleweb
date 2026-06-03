@@ -367,36 +367,38 @@ const GamePage = () => {
           </form>
         </div>
 
-        <div className="score-panel">
-          <h2 className="score-title">Статистика</h2>
-          {scoreData ? (
-            <div className="score-content">
-              <div className="score-item">
-                <span className="score-label">Очки:</span>
-                <span className="score-value">{scoreData.score || 0}</span>
+        <div className="score-sidebar">
+          <div className="score-panel">
+            <h2 className="score-title">Статистика</h2>
+            {scoreData ? (
+              <div className="score-content">
+                <div className="score-item">
+                  <span className="score-label">Очки:</span>
+                  <span className="score-value">{scoreData.score || 0}</span>
+                </div>
+                <div className="score-item">
+                  <span className="score-label">Рейтинг:</span>
+                  <span className="score-value">{scoreData.rating || 0}</span>
+                </div>
+                <div className="score-item">
+                  <span className="score-label">Раундов:</span>
+                  <span className="score-value">{scoreData.rounds || 0}</span>
+                </div>
+                <div className="score-item">
+                  <span className="score-label">Уровень стресса:</span>
+                  <span className="score-value stress">{scoreData.stress_level || 0}</span>
+                </div>
               </div>
-              <div className="score-item">
-                <span className="score-label">Рейтинг:</span>
-                <span className="score-value">{scoreData.rating || 0}</span>
-              </div>
-              <div className="score-item">
-                <span className="score-label">Раундов:</span>
-                <span className="score-value">{scoreData.rounds || 0}</span>
-              </div>
-              <div className="score-item">
-                <span className="score-label">Уровень стресса:</span>
-                <span className="score-value stress">{scoreData.stress_level || 0}</span>
-              </div>
-            </div>
-          ) : (
-            <div className="score-loading">Загрузка...</div>
-          )}
-        </div>
-        <div className="game-guest-buttons">
-          {isGuest && (
-            <button className="game-guest-btn register" onClick={() => navigate('/login')}>Зарегистрироваться</button>
-          )}
-          <button className="game-guest-btn duel" onClick={() => navigate('/duel')}>⚔️ Онлайн дуэль</button>
+            ) : (
+              <div className="score-loading">Загрузка...</div>
+            )}
+          </div>
+          <div className="game-guest-buttons">
+            {isGuest && (
+              <button className="game-guest-btn register" onClick={() => navigate('/login')}>Зарегистрироваться</button>
+            )}
+            <button className="game-guest-btn duel" onClick={() => navigate('/duel')}>⚔️ Онлайн дуэль</button>
+          </div>
         </div>
       </div>
     </div>

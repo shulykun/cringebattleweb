@@ -526,11 +526,15 @@
   color: rgba(255,255,255,0.3);
   font-size: 0.8rem;
 }
+.score-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .game-guest-buttons {
   display: flex;
   gap: 8px;
-  margin-top: 12px;
-  width: 280px;
 }
 .game-guest-btn {
   flex: 1;
