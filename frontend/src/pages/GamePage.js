@@ -70,7 +70,6 @@ const GamePage = () => {
     }
   }, [messages]);
 
-  const loadScore = async () => {
   // beforeunload for guests
   useEffect(() => {
     const handler = (e) => {
