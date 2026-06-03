@@ -64,6 +64,10 @@ const LeaderboardPage = () => {
           </table>
         )}
       </div>
+      <div className="leaderboard-actions">
+        <button className="lb-action-btn play" onClick={() => navigate('/game')}>🎮 Играть</button>
+        <button className="lb-action-btn duel" onClick={() => navigate('/duel')}>⚔️ Дуэль</button>
+      </div>
       <AppFooter />
     </div>
   );
