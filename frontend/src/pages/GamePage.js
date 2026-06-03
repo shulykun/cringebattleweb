@@ -220,14 +220,18 @@ const GamePage = () => {
   };
 
   const [showExitModal, setShowExitModal] = useState(false);
+  const [pendingPath, setPendingPath] = useState('/');
 
-  const handleBack = () => {
+  const safeNavigate = (path) => {
     if (isGuest && gameStarted) {
+      setPendingPath(path);
       setShowExitModal(true);
     } else {
-      navigate('/');
+      navigate(path);
     }
   };
+
+  const handleBack = () => safeNavigate('/');
 
   return (
     <div className="game-page">
@@ -242,13 +246,13 @@ const GamePage = () => {
             <button className="exit-modal-btn discard" onClick={() => {
               setShowExitModal(false);
               localStorage.removeItem('guestUserId');
-              navigate('/');
+              navigate(pendingPath);
             }}>Выйти без сохранения</button>
             <button className="exit-modal-btn cancel" onClick={() => setShowExitModal(false)}>Отмена</button>
           </div>
         </div>
       )}
-      <AppHeader backTo="/" onBack={handleBack} rightButtons={[{ label: '📖', onClick: () => navigate('/rules') }, { label: '👤', onClick: () => navigate('/profile') }]} />
+      <AppHeader backTo="/" onBack={handleBack} rightButtons={[{ label: '📖', onClick: () => safeNavigate('/rules') }, { label: '👤', onClick: () => safeNavigate('/profile') }]} />
       <Helmet>
         <title>Играть — Бой с кринжем | Игра с Алисой</title>
         <meta name="description" content="Попадай в неловкие ситуации и выходи из них с блеском! Одиночная игра с AI-судьёй." />
