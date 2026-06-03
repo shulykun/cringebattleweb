@@ -527,19 +527,20 @@
   font-size: 0.8rem;
 }
 .game-guest-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  display: flex;
+  gap: 8px;
   margin-top: 16px;
 }
 .game-guest-btn {
-  padding: 12px 14px;
+  flex: 1;
+  padding: 10px 8px;
   border: none;
-  border-radius: 12px;
-  font-size: 0.85rem;
+  border-radius: 10px;
+  font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.15s;
+  white-space: nowrap;
 }
 .game-guest-btn:hover {
   transform: translateY(-2px);
