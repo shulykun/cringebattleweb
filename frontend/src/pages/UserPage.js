@@ -91,8 +91,8 @@ const UserPage = () => {
         </div>
 
         <div className="user-action-buttons">
-          <button className="user-action-btn play" onClick={() => navigate('/game')}>🎮 Играть</button>
-          <button className="user-action-btn duel" onClick={() => navigate('/duel')}>⚔️ Дуэль</button>
+        <button className="user-action-btn play" onClick={() => navigate('/game')}>🎮 Играть одному</button>
+          <button className="user-action-btn duel" onClick={() => navigate('/duel')}>⚔️ Онлайн-дуэль</button>
         </div>
 
         {user.best_answer && (
