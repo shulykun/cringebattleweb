@@ -529,7 +529,8 @@
 .game-guest-buttons {
   display: flex;
   gap: 8px;
-  margin-top: 16px;
+  margin-top: 12px;
+  width: 280px;
 }
 .game-guest-btn {
   flex: 1;
