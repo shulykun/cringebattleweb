@@ -184,3 +184,31 @@
   font-style: italic;
   line-height: 1.5;
 }
+.user-action-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 20px;
+}
+.user-action-btn {
+  padding: 14px 16px;
+  border: none;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.user-action-btn:hover {
+  transform: translateY(-2px);
+}
+.user-action-btn.play {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+}
+.user-action-btn.duel {
+  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(167, 139, 250, 0.3);
+}

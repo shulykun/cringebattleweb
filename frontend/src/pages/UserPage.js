@@ -90,6 +90,11 @@ const UserPage = () => {
           </div>
         </div>
 
+        <div className="user-action-buttons">
+          <button className="user-action-btn play" onClick={() => navigate('/game')}>🎮 Играть</button>
+          <button className="user-action-btn duel" onClick={() => navigate('/duel')}>⚔️ Дуэль</button>
+        </div>
+
         {user.best_answer && (
           <div className="best-answer">
             <div className="best-answer-label">⭐ Лучший ответ ({Math.round(user.best_answer.grade / 10)}/10)</div>
