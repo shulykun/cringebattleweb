@@ -526,3 +526,31 @@
   color: rgba(255,255,255,0.3);
   font-size: 0.8rem;
 }
+.game-guest-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+.game-guest-btn {
+  padding: 12px 14px;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.game-guest-btn:hover {
+  transform: translateY(-2px);
+}
+.game-guest-btn.register {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(102, 126, 234, 0.3);
+}
+.game-guest-btn.duel {
+  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(167, 139, 250, 0.3);
+}

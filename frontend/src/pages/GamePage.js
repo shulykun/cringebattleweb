@@ -392,6 +392,12 @@ const GamePage = () => {
             <div className="score-loading">Загрузка...</div>
           )}
         </div>
+        {isGuest && (
+          <div className="game-guest-buttons">
+            <button className="game-guest-btn register" onClick={() => navigate('/login')}>Зарегистрироваться</button>
+            <button className="game-guest-btn duel" onClick={() => navigate('/duel')}>⚔️ Онлайн дуэль</button>
+          </div>
+        )}
       </div>
       <AppFooter />
     </div>
