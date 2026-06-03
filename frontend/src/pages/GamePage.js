@@ -394,9 +394,6 @@ const GamePage = () => {
             )}
           </div>
           <div className="game-guest-buttons">
-            {isGuest && (
-              <button className="game-guest-btn register" onClick={() => navigate('/login')}>Зарегистрироваться</button>
-            )}
             <button className="game-guest-btn duel" onClick={() => navigate('/duel')}>⚔️ Онлайн дуэль</button>
           </div>
         </div>
