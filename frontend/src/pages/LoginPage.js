@@ -41,6 +41,18 @@ const LoginPage = () => {
         localStorage.setItem('username', authResponse.username || '');
         localStorage.setItem('email', authResponse.email || '');
         localStorage.setItem('yandexId', authResponse.yandex_id || '');
+        // Merge guest if exists
+        const guestId = localStorage.getItem('guestUserId');
+        if (guestId) {
+          try {
+            await fetch('/api/merge-guest', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ guest_id: parseInt(guestId), real_id: parseInt(authResponse.user_id) })
+            });
+            localStorage.removeItem('guestUserId');
+          } catch (e) { console.error('Merge guest failed:', e); }
+        }
         window.history.replaceState({}, document.title, '/login');
         navigate('/');
       } else {
@@ -75,6 +87,18 @@ const LoginPage = () => {
         reachGoal('login');
         localStorage.setItem('userId', data.user_id);
         localStorage.setItem('username', data.nickname);
+        // Merge guest if exists
+        const guestId = localStorage.getItem('guestUserId');
+        if (guestId) {
+          try {
+            await fetch('/api/merge-guest', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ guest_id: parseInt(guestId), real_id: parseInt(data.user_id) })
+            });
+            localStorage.removeItem('guestUserId');
+          } catch (e) { console.error('Merge guest failed:', e); }
+        }
         navigate('/');
       } else {
         setError(data.message || 'Неверный код');

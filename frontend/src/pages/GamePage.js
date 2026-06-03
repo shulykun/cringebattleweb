@@ -8,7 +8,10 @@ import { reachGoal } from '../services/metrica';
 import './GamePage.css';
 
 const GamePage = () => {
-  const [userId] = useState(() => localStorage.getItem('userId') || '');
+  const navigate = useNavigate();
+  const [activeUserId, setActiveUserId] = useState(null);
+  const [isGuest, setIsGuest] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false);
   const [messages, setMessages] = useState(() => {
     try {
       const saved = localStorage.getItem('gameMessages');
@@ -18,23 +21,42 @@ const GamePage = () => {
   const [scoreData, setScoreData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [inputText, setInputText] = useState('');
-  const [currentButtons, setCurrentButtons] = useState([]); // Текущие кнопки для отображения
-  const navigate = useNavigate();
+  const [currentButtons, setCurrentButtons] = useState([]);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
-    if (!userId) {
-      navigate('/login');
-      return;
-    }
-    // Pseudo-пользователям нужна авторизация для одиночной игры
-    const yid = localStorage.getItem('yandexId') || '';
-    if (!yid || yid.startsWith('guest_') || yid.startsWith('pseudo_')) {
-      navigate('/login');
-      return;
-    }
-    loadScore();
-  }, [userId, navigate]);
+    const initUser = async () => {
+      const realUserId = localStorage.getItem('userId');
+      const yid = localStorage.getItem('yandexId') || '';
+      const isReal = realUserId && yid && !yid.startsWith('guest_') && !yid.startsWith('pseudo_');
+      if (isReal) {
+        setActiveUserId(realUserId);
+        setIsGuest(false);
+      } else {
+        // Try guest id
+        let guestId = localStorage.getItem('guestUserId');
+        if (!guestId) {
+          try {
+            const res = await fetch('/api/guest', { method: 'POST' });
+            const data = await res.json();
+            if (data.status === 'ok') {
+              guestId = String(data.user_id);
+              localStorage.setItem('guestUserId', guestId);
+            }
+          } catch (e) {
+            console.error('Failed to create guest:', e);
+          }
+        }
+        setActiveUserId(guestId);
+        setIsGuest(true);
+      }
+    };
+    initUser();
+  }, []);
+
+  useEffect(() => {
+    if (activeUserId) loadScore();
+  }, [activeUserId]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -49,8 +71,21 @@ const GamePage = () => {
   }, [messages]);
 
   const loadScore = async () => {
+  // beforeunload for guests
+  useEffect(() => {
+    const handler = (e) => {
+      if (isGuest && gameStarted) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [isGuest, gameStarted]);
+
+  const loadScore = async () => {
     try {
-      const data = await getScore(userId);
+      const data = await getScore(activeUserId);
       setScoreData(data);
     } catch (error) {
       console.error('Error loading score:', error);
@@ -63,6 +98,7 @@ const GamePage = () => {
 
     const previousMessages = messages;
     setLoading(true);
+    setGameStarted(true);
     
     // Очищаем кнопки сразу при нажатии
     setCurrentButtons([]);
@@ -79,7 +115,7 @@ const GamePage = () => {
     setMessages([...previousPair, userMessage]);
 
     try {
-      const response = await sendMessage(userId, null, null, button);
+      const response = await sendMessage(activeUserId, null, null, button);
 
       // Ответ игры
       const gameMessage = {
@@ -124,6 +160,7 @@ const GamePage = () => {
     const previousMessages = messages;
     setLoading(true);
     
+    setGameStarted(true);
     // Очищаем кнопки сразу при отправке текста
     setCurrentButtons([]);
     
@@ -138,7 +175,7 @@ const GamePage = () => {
       setMessages([...previousPair, userMessage]);
       new Audio('/sounds/send.mp3').play().catch(() => {});
       
-      const response = await sendMessage(userId, userText);
+      const response = await sendMessage(activeUserId, userText);
       if (!response.response) {
         setLoading(false);
         setMessages([...previousPair, userMessage, { type: 'game', text: 'Ошибка: нет ответа от сервера', buttons: [] }]);
@@ -183,9 +220,36 @@ const GamePage = () => {
     return `https://cringebattle22.roborumba.com/${imagePath}`;
   };
 
+  const [showExitModal, setShowExitModal] = useState(false);
+
+  const handleBack = () => {
+    if (isGuest && gameStarted) {
+      setShowExitModal(true);
+    } else {
+      navigate('/');
+    }
+  };
+
   return (
     <div className="game-page">
-      <AppHeader backTo="/" rightButtons={[{ label: '📖', onClick: () => navigate('/rules') }, { label: '👤', onClick: () => navigate('/profile') }]} />
+      {showExitModal && (
+        <div className="exit-modal-overlay">
+          <div className="exit-modal">
+            <div className="exit-modal-title">Сохранить результат?</div>
+            <div className="exit-modal-text">Если выйдете без сохранения, прогресс потеряется.</div>
+            <button className="exit-modal-btn save" onClick={() => {
+              navigate('/login');
+            }}>Сохранить и войти</button>
+            <button className="exit-modal-btn discard" onClick={() => {
+              setShowExitModal(false);
+              localStorage.removeItem('guestUserId');
+              navigate('/');
+            }}>Выйти без сохранения</button>
+            <button className="exit-modal-btn cancel" onClick={() => setShowExitModal(false)}>Отмена</button>
+          </div>
+        </div>
+      )}
+      <AppHeader backTo="/" onBack={handleBack} rightButtons={[{ label: '📖', onClick: () => navigate('/rules') }, { label: '👤', onClick: () => navigate('/profile') }]} />
       <Helmet>
         <title>Играть — Бой с кринжем | Игра с Алисой</title>
         <meta name="description" content="Попадай в неловкие ситуации и выходи из них с блеском! Одиночная игра с AI-судьёй." />
