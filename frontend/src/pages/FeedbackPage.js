@@ -31,7 +31,8 @@ const FeedbackPage = () => {
           name: name.trim(),
           contact: contact.trim(),
           message: message.trim(),
-          type
+          type,
+          user_id: localStorage.getItem('userId') || ''
         })
       });
       const data = await res.json();
