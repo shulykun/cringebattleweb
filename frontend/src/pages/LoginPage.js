@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { reachGoal } from '../services/metrica';
+import { reachGoal, trackPageView } from '../services/metrica';
 import { authWithYandex } from '../services/api';
 import './LoginPage.css';
 
@@ -57,6 +57,7 @@ const LoginPage = () => {
         navigate('/');
       } else {
         setError(authResponse.error || 'Ошибка авторизации');
+        trackPageView('/virtual/login-yandex-failed');
       }
     } catch (err) {
       console.error('Yandex OAuth error:', err);
@@ -102,6 +103,7 @@ const LoginPage = () => {
         navigate('/');
       } else {
         setError(data.message || 'Неверный код');
+        trackPageView('/virtual/login-otp-failed');
       }
     } catch {
       setError('Ошибка подключения');

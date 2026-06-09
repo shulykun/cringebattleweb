@@ -264,6 +264,63 @@ duel_players = {}      # player_id -> dict
 duel_rounds = {}       # round_id -> dict
 duel_answers = {}      # answer_id -> dict
 
+@app.route('/api/demo-answer', methods=['POST'])
+def demo_answer():
+    """Демо-ответ на главной: оценка через DeepSeek."""
+    try:
+        data = request.json or {}
+        situation = data.get('situation', '')
+        answer = data.get('answer', '')
+
+        if not answer or len(answer.strip()) < 2:
+            return jsonify({'status': 'error', 'message': 'Слишком короткий ответ'}), 400
+
+        try:
+            resp = requests.post('https://api.deepseek.com/chat/completions', {
+                'timeout': 15,
+                'headers': {
+                    'Authorization': 'Bearer sk-6ff99adb03a144a0996d4ecc8b349a6a',
+                    'Content-Type': 'application/json',
+                },
+                'json': {
+                    'model': 'deepseek-chat',
+                    'messages': [
+                        {'role': 'system', 'content': 'Ты оцениваешь выход из неловкой ситуации. Ответь ТОЛЬКО в формате JSON: {"score": <число от 1 до 10>, "comment": "<короткий комментарий на русском>"}'},
+                        {'role': 'user', 'content': f'Ситуация: {situation}\nОтвет игрока: {answer}'}
+                    ],
+                    'max_tokens': 150,
+                    'temperature': 0.8,
+                },
+            })
+            resp.raise_for_status()
+            text = resp.json()['choices'][0]['message']['content']
+            import json as _json
+            # Попробуем распарсить JSON из ответа
+            try:
+                parsed = _json.loads(text)
+                score = int(parsed['score'])
+                comment = parsed['comment']
+            except Exception:
+                # Фоллбэк — ищем число
+                import re
+                numbers = re.findall(r'\b(\d{1,2})\b', text)
+                score = int(numbers[0]) if numbers else random.randint(4, 8)
+                comment = text[:100]
+            score = max(1, min(10, score))
+            return jsonify({'status': 'ok', 'score': score, 'comment': comment})
+        except Exception:
+            score = random.randint(4, 8)
+            comments = [
+                "Остроумно, но можно лучше!",
+                "Отличный выход из ситуации!",
+                "Кринж-фактор снижен успешно.",
+                "Смело! Зал одобрительно кивает.",
+            ]
+            return jsonify({'status': 'ok', 'score': score, 'comment': random.choice(comments)})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+
 DUEL_TASKS = [
     {"id": 1, "description": "Ты случайно назвал учителя «мамой» на уроке. Что скажешь?"},
     {"id": 2, "description": "Ты пришёл на свидание, а там — твой бывший/бывшая с новым партнёром. Твои действия?"},

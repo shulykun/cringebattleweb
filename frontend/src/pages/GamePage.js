@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getScore, sendMessage } from '../services/api';
 import AppHeader from '../components/AppHeader';
@@ -12,6 +12,45 @@ const GamePage = () => {
   const [activeUserId, setActiveUserId] = useState(null);
   const [isGuest, setIsGuest] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
+  const [voiceOn, setVoiceOn] = useState(() => localStorage.getItem('voiceOn') === 'true');
+  const musicRef = useRef(null);
+
+  const speak = useCallback((text) => {
+    if (!voiceOn) { console.log('TTS: voice off'); return; }
+    const clean = text.replace(/[*#_\[\]()]/g, '');
+    console.log('TTS: speaking', clean.substring(0, 50));
+    // Pause ambient music
+    const ambient = document.querySelector('audio[loop]') || musicRef.current;
+    if (ambient) { ambient.volume = 0.05; }
+    const resumeAmbient = () => { if (ambient) { ambient.volume = 0.3; } };
+    // Try Web Speech API first (only if Russian voice exists)
+    if (window.speechSynthesis) {
+      const voices = window.speechSynthesis.getVoices();
+      const ruVoice = voices.find(v => v.lang.startsWith('ru'));
+      if (ruVoice) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(clean);
+        u.lang = 'ru-RU'; u.rate = 1.3; u.pitch = 1.0;
+        u.voice = ruVoice;
+        u.onend = resumeAmbient;
+        u.onerror = resumeAmbient;
+        window.speechSynthesis.speak(u);
+        return;
+      }
+    }
+    // Fallback: server-side TTS for Safari
+    console.log('TTS: using server-side gTTS');
+    const audio = new Audio();
+    audio.onended = resumeAmbient;
+    audio.onerror = resumeAmbient;
+    fetch('/api/tts', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({text: clean})
+    }).then(r => r.blob()).then(blob => {
+      audio.src = URL.createObjectURL(blob);
+      audio.play().catch(() => {});
+    }).catch(() => resumeAmbient());
+  }, [voiceOn]);
   const [messages, setMessages] = useState(() => {
     try {
       const saved = localStorage.getItem('gameMessages');
@@ -98,6 +137,11 @@ const GamePage = () => {
     const previousMessages = messages;
     setLoading(true);
     setGameStarted(true);
+    // Start music on first interaction
+    if (voiceOn && musicRef.current && musicRef.current.paused) {
+      musicRef.current.volume = 0.3;
+      musicRef.current.play().catch(() => {});
+    }
     
     // Очищаем кнопки сразу при нажатии
     setCurrentButtons([]);
@@ -131,6 +175,7 @@ const GamePage = () => {
       // Сохраняем только последние 2 пары: предыдущая пара + текущая пара
       setMessages([...previousPair, userMessage, gameMessage]);
       new Audio('/sounds/receive.mp3').play().catch(() => {});
+      speak(gameMessage.tts || gameMessage.text);
       // Сохраняем кнопки для отображения под формой ввода
       setCurrentButtons(gameMessage.buttons || []);
       await loadScore(); reachGoal('solo_round_complete');
@@ -160,6 +205,11 @@ const GamePage = () => {
     setLoading(true);
     
     setGameStarted(true);
+    // Start music on first interaction
+    if (voiceOn && musicRef.current && musicRef.current.paused) {
+      musicRef.current.volume = 0.3;
+      musicRef.current.play().catch(() => {});
+    }
     // Очищаем кнопки сразу при отправке текста
     setCurrentButtons([]);
     
@@ -195,6 +245,7 @@ const GamePage = () => {
       // Сохраняем только последние 2 пары: предыдущая пара + текущая пара
       setMessages([...previousPair, userMessage, gameMessage]);
       new Audio('/sounds/receive.mp3').play().catch(() => {});
+      speak(gameMessage.tts || gameMessage.text);
       // Сохраняем кнопки для отображения под формой ввода
       setCurrentButtons(gameMessage.buttons || []);
       await loadScore(); reachGoal('solo_round_complete');
@@ -235,6 +286,8 @@ const GamePage = () => {
 
   return (
     <div className="game-page">
+      <audio ref={musicRef} src="/sounds/ambient.mp3?v=2" preload="auto" loop />
+      <button onClick={() => { const m = musicRef.current; const v = !voiceOn; setVoiceOn(v); localStorage.setItem('voiceOn', v); if (!v) { window.speechSynthesis?.cancel(); if (m) m.pause(); } else { if (m && m.paused) { m.volume = 0.3; m.play().catch(()=>{}); } } }} style={{position:'fixed',bottom:16,right:16,background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'50%',width:36,height:36,color:'#fff',fontSize:16,cursor:'pointer',zIndex:999}}>{voiceOn ? '🔊' : '🔇'}</button>
       {showExitModal && (
         <div className="exit-modal-overlay">
           <div className="exit-modal">
