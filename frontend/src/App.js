@@ -15,8 +15,13 @@ import InstallPage from './pages/InstallPage';
 import MyDuelsPage from './pages/MyDuelsPage';
 import './App.css';
 import { trackPageView } from './services/metrica';
+import { initPushNotifications } from './services/rustore-push';
 
 function App() {
+  React.useEffect(() => {
+    initPushNotifications();
+  }, []);
+
   return (
     <Router>
       <MetricaTracker />
