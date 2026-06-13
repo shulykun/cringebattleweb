@@ -40,3 +40,5 @@ twa-app/app/build/
 twa-app/local.properties
 twa-app/android.keystore
 distrib/
+frontend/android/
+frontend/node_modules/
