@@ -9,6 +9,7 @@ import LeaderboardPage from './pages/LeaderboardPage';
 import UserPage from './pages/UserPage';
 import RulesPage from './pages/RulesPage';
 import FeedbackPage from './pages/FeedbackPage';
+import PrivacyPage from './pages/PrivacyPage';
 import VoicePage from './pages/VoicePage';
 import InstallPage from './pages/InstallPage';
 import MyDuelsPage from './pages/MyDuelsPage';
@@ -30,6 +31,7 @@ function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/rules" element={<RulesPage />} />
         <Route path="/feedback" element={<FeedbackPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/install" element={<InstallPage />} />
         <Route path="/my-duels" element={<MyDuelsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -3,6 +3,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <queries>
         <intent>
@@ -15,7 +18,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/appName"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppLauncher">
+        android:theme="@style/Theme.AppLauncher"
+        android:usesCleartextTraffic="false">
 
         <meta-data
             android:name="android.webkit.WebView.MetricsOptOut"
@@ -24,26 +28,27 @@
         <activity
             android:name=".LauncherActivity"
             android:label="@string/launcherName"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
+
             <meta-data
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Deep link filter for TWA verification -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="xn--90aichegrffwj.xn--p1ai" />
+            </intent-filter>
         </activity>
-
-        <activity
-            android:name=".FocusActivity"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|screenLayout"
-            android:exported="false"
-            android:launchMode="singleTask"
-            android:theme="@style/Theme.AppLauncher" />
-
-        <service
-            android:name=".FocusService"
-            android:exported="false" />
 
         <meta-data
             android:name="asset_statements"
