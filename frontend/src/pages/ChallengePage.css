@@ -454,6 +454,15 @@
   gap: 8px;
   margin-bottom: 20px;
 }
+.invite-buttons {
+  display: flex;
+  gap: 8px;
+}
+.invite-buttons .challenge-btn {
+  flex: 1;
+  font-size: 0.85rem;
+  padding: 10px 12px;
+}
 .invite-link-input {
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.1);

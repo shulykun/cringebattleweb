@@ -358,6 +358,25 @@ const ChallengePage = () => {
     reachGoal('duel_invite_copy');
     setTimeout(() => setLinkCopied(false), 2000);
   };
+
+  const shareLink = async () => {
+    const url = getInviteLink();
+    const shareData = {
+      title: 'Бой с кринжем — дуэль',
+      text: 'Присоединяйся к дуэли в «Бой с кринжем»!',
+      url: url
+    };
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        reachGoal('duel_invite_share');
+      } catch (e) {
+        // user cancelled — ignore
+      }
+    } else {
+      copyLink();
+    }
+  };
   const copyCode = () => {
     copyToClipboard(room?.code || '');
     setCodeCopied(true);
@@ -556,9 +575,14 @@ const ChallengePage = () => {
           <div className="lobby-card">
             <h2>Комната {room?.code}</h2>
             <div className="invite-section">
-              <button className="challenge-btn secondary" onClick={copyLink}>
-                {linkCopied ? '✅ Ссылка скопирована!' : '🔗 Пригласить по ссылке'}
-              </button>
+              <div className="invite-buttons">
+                <button className="challenge-btn secondary" onClick={shareLink}>
+                  📤 Поделиться
+                </button>
+                <button className="challenge-btn secondary" onClick={copyLink}>
+                  {linkCopied ? '✅ Скопировано!' : '🔗 Копировать'}
+                </button>
+              </div>
               <input
                 type="text"
                 readOnly
