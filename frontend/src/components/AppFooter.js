@@ -8,7 +8,7 @@ const AppFooter = () => {
   return (
     <div className="app-footer">
       <div className="footer-links">
-        <button className="footer-link" onClick={() => navigate('/game')}>🎮 Игра</button>
+        <button className="footer-link" onClick={() => navigate('/voice')}>🎮 Игра</button>
         <button className="footer-link" onClick={() => navigate('/duel')}>⚔️ Дуэль</button>
         <button className="footer-link" onClick={() => navigate('/leaderboard')}>🏆 Лидерборд</button>
         <button className="footer-link" onClick={() => navigate('/rules')}>Правила</button>

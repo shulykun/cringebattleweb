@@ -34,3 +34,8 @@ frontend/.env.production.local
 .DS_Store
 Thumbs.db
 
+twa-app/.gradle/
+twa-app/build/
+twa-app/app/build/
+twa-app/local.properties
+twa-app/android.keystore

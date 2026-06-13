@@ -87,7 +87,7 @@ const HomePage = () => {
 
         {/* Buttons */}
         <div className="home-buttons">
-          <button className="home-button solo" onClick={() => { reachGoal('click_solo'); navigate('/game'); }}>
+          <button className="home-button solo" onClick={() => { reachGoal('click_solo'); navigate('/voice'); }}>
             <span className="button-icon">🎮</span>
             <span className="button-text">
               <span className="button-title">Играть одному</span>
@@ -181,7 +181,7 @@ const HomePage = () => {
               </div>
               <p className="demo-comment">{demoResult.comment}</p>
               <div className="demo-actions">
-                <button className="demo-play" onClick={() => { reachGoal('demo_to_game'); navigate('/game'); }}>
+                <button className="demo-play" onClick={() => { reachGoal('demo_to_game'); navigate('/voice'); }}>
                   💬 Играть дальше
                 </button>
               </div>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="play"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/launcherName">
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetPackage="ai.boiskrinzhem.twa"
+            android:targetClass="ai.boiskrinzhem.twa.LauncherActivity" />
+    </shortcut>
+</shortcuts>

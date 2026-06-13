@@ -30,6 +30,8 @@ const VoicePage = () => {
   const [interimText, setInterimText] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [topBarExpanded, setTopBarExpanded] = useState(false);
+  const [textMode, setTextMode] = useState(false);
+  const [textInput, setTextInput] = useState('');
   const canvasRef = useRef(null);
   const animFrameRef = useRef(null);
   const recognitionRef = useRef(null);
@@ -232,6 +234,7 @@ const VoicePage = () => {
   }, [activeUserId, speak]);
 
   const handleTap = useCallback(() => {
+    if (textMode) return;
     if (state === STATES.IDLE) {
       sendToEngine('давай играть');
     } else if (state === STATES.WAITING) {
@@ -245,7 +248,31 @@ const VoicePage = () => {
       synthRef.current?.cancel();
       setState(STATES.WAITING);
     }
-  }, [state, sendToEngine, startListening, stopListening, addRing]);
+  }, [state, sendToEngine, startListening, stopListening, addRing, textMode]);
+
+  const toggleTextMode = useCallback((e) => {
+    e.stopPropagation();
+    if (textMode) {
+      // closing text mode
+      setTextMode(false);
+      setTextInput('');
+      if (state === STATES.LISTENING) stopListening();
+    } else {
+      setTextMode(true);
+      if (state === STATES.LISTENING) stopListening();
+      setState(STATES.WAITING);
+    }
+  }, [textMode, state, stopListening]);
+
+  const handleTextSubmit = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const val = textInput.trim();
+    if (!val) return;
+    setTextInput('');
+    setTextMode(false);
+    sendToEngine(val);
+  }, [textInput, sendToEngine]);
 
   const handleSuggestClick = useCallback((e, btn) => {
     e.stopPropagation();
@@ -276,7 +303,7 @@ const VoicePage = () => {
       <Helmet><title>Голосовой режим — Бой с кринжем</title></Helmet>
 
       <div className="voice-top">
-        <button className="voice-back" onClick={(e) => { e.stopPropagation(); synthRef.current?.cancel(); navigate('/game'); }}>←</button>
+        <button className="voice-back" onClick={(e) => { e.stopPropagation(); synthRef.current?.cancel(); navigate('/voice'); }}>←</button>
         <div className="voice-top-logo">
           <img src="/logo.jpg" alt="" className="voice-header-logo" />
           <span className="voice-top-title">Голосовой режим</span>
@@ -309,7 +336,8 @@ const VoicePage = () => {
               <button onClick={() => setMenuOpen(false)}>✕</button>
             </div>
             <nav className="vbm-nav">
-              <button onClick={() => { synthRef.current?.cancel(); setMenuOpen(false); navigate('/game'); }}>🎮 Одиночная игра</button>
+              <button onClick={() => { synthRef.current?.cancel(); setMenuOpen(false); navigate('/voice'); }}>🎮 Игра</button>
+              <button onClick={() => { synthRef.current?.cancel(); setMenuOpen(false); navigate('/game'); }}>💬 Чат-режим</button>
               <button onClick={() => { synthRef.current?.cancel(); setMenuOpen(false); navigate('/duel'); }}>⚔️ Дуэль</button>
               <button onClick={() => { synthRef.current?.cancel(); setMenuOpen(false); navigate('/leaderboard'); }}>📊 Рейтинг</button>
               <button onClick={() => { synthRef.current?.cancel(); setMenuOpen(false); navigate('/profile'); }}>👤 Профиль</button>
@@ -383,12 +411,19 @@ const VoicePage = () => {
             <canvas ref={canvasRef} className="voice-orb-canvas" />
             {rings.map(id => <div key={id} className="voice-ring" />)}
 
+            {!textMode && (
+              <button className="voice-keyboard-toggle" onClick={toggleTextMode} title="Напечатать ответ">
+                ⌨
+              </button>
+            )}
+
             <div className={`voice-orb ${state}`}>
               {state === STATES.IDLE && <span className="orb-icon">🎮</span>}
               {state === STATES.LISTENING && <span className="orb-icon pulse-red">🎙</span>}
               {state === STATES.PROCESSING && <div className="orb-spinner" />}
               {state === STATES.SPEAKING && <span className="orb-icon">💬</span>}
-              {state === STATES.WAITING && <span className="orb-icon breathe">🎙</span>}
+              {state === STATES.WAITING && !textMode && <span className="orb-icon breathe">🎙</span>}
+              {state === STATES.WAITING && textMode && <span className="orb-icon">✏️</span>}
               {state === STATES.GRADED && grade && (
                 <span className="orb-icon grade-appear" style={{ color: getGradeColor(grade.score) }}>
                   {getGradeEmoji(grade.score)}
@@ -401,10 +436,33 @@ const VoicePage = () => {
               {state === STATES.LISTENING && 'Слушаю...'}
               {state === STATES.PROCESSING && 'Думаю...'}
               {state === STATES.SPEAKING && 'Ситуация'}
-              {state === STATES.WAITING && 'Нажми чтобы ответить'}
+              {state === STATES.WAITING && !textMode && 'Нажми чтобы ответить'}
+              {state === STATES.WAITING && textMode && 'Напиши ответ'}
               {state === STATES.GRADED && 'Оценка'}
             </div>
           </div>
+
+          {textMode && (
+            <form className="voice-text-input-area" onSubmit={handleTextSubmit} onClick={(e) => e.stopPropagation()}>
+              <textarea
+                className="voice-text-input"
+                value={textInput}
+                onChange={(e) => setTextInput(e.target.value)}
+                placeholder="Напиши свой ответ..."
+                autoFocus
+                rows={2}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleTextSubmit(e);
+                  }
+                }}
+              />
+              <button type="submit" className="voice-text-send" disabled={!textInput.trim()}>
+                Отправить →
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </div>

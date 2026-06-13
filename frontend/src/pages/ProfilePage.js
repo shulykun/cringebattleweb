@@ -69,7 +69,7 @@ const ProfilePage = () => {
 
         {/* Buttons */}
         <div className="profile-buttons">
-          <button className="profile-btn solo" onClick={() => { reachGoal('click_solo'); navigate('/game'); }}>
+          <button className="profile-btn solo" onClick={() => { reachGoal('click_solo'); navigate('/voice'); }}>
             <span className="profile-btn-icon">🎮</span>
             <span className="profile-btn-text">Играть</span>
           </button>

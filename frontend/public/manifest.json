@@ -16,10 +16,12 @@
       "purpose": "any maskable"
     }
   ],
-  "start_url": "/",
+  "start_url": "/voice",
+  "scope": "/",
   "display": "standalone",
   "theme_color": "#0f0c29",
   "background_color": "#0f0c29",
   "orientation": "portrait",
-  "lang": "ru"
+  "lang": "ru",
+  "categories": ["games", "entertainment"]
 }

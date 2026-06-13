@@ -1,0 +1,26 @@
+{
+  "packageId": "ai.boiskrinzhem.twa",
+  "host": "xn--90aichegrffwj.xn--p1ai",
+  "name": "Бой с кринжем — игра с Алисой",
+  "launcherName": "Кринж",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#0f0c29",
+  "themeColorDark": "#0f0c29",
+  "navigationColor": "#0f0c29",
+  "navigationColorDark": "#0f0c29",
+  "navigationDividerColor": "#0f0c29",
+  "navigationDividerColorDark": "#0f0c29",
+  "backgroundColor": "#0f0c29",
+  "enableNotifications": true,
+  "startUrl": "/voice",
+  "iconUrl": "https://xn--90aichegrffwj.xn--p1ai/logo512.png",
+  "maskableIconUrl": "https://xn--90aichegrffwj.xn--p1ai/logo512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "android"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1
+}

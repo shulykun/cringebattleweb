@@ -65,7 +65,7 @@ const LeaderboardPage = () => {
         )}
       </div>
       <div className="leaderboard-actions">
-        <button className="lb-action-btn play" onClick={() => navigate('/game')}>🎮 Играть одному</button>
+        <button className="lb-action-btn play" onClick={() => navigate('/voice')}>🎮 Играть одному</button>
         <button className="lb-action-btn duel" onClick={() => navigate('/duel')}>⚔️ Онлайн-дуэль</button>
       </div>
       <AppFooter />
