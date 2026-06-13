@@ -847,17 +847,28 @@
 
 /* ── Mobile ───────────────────────────── */
 @media (max-width: 600px) {
-  .challenge-header { padding: 12px 16px; }
-  .challenge-title { font-size: 1.1rem; }
-  .big-code { font-size: 3rem; }
+  .challenge-header { padding: 10px 12px; }
+  .challenge-title { font-size: 1rem; }
+  .big-code { font-size: 2.5rem; }
   .result-scores { flex-direction: column; }
   .result-vs { transform: rotate(90deg); }
-  .challenge-card { padding: 20px; }
+  .challenge-card { padding: 16px; min-width: unset !important; width: 100%; }
+  .challenge-menu { padding: 20px 12px; gap: 12px; }
+  .challenge-menu .challenge-card { min-width: unset; width: 100%; }
+  .challenge-desc { margin: 0 8px 12px; font-size: 0.8rem; padding: 10px 12px; }
+  .card-icon { font-size: 28px; }
+  .challenge-card h2 { font-size: 1rem; }
   .join-form { flex-direction: column; }
   .code-input-small { max-width: 100%; }
   .code-input { letter-spacing: normal; font-size: 1rem; }
   .nickname-field .code-input { letter-spacing: normal; font-size: 1rem; }
   .players-selector { justify-content: center; }
+  .challenge-btn { padding: 12px 20px; font-size: 0.9rem; width: 100%; }
+  .challenge-divider { margin: 8px 0; }
+  .challenge-content { padding: 0 8px; }
+  .join-duel-screen { padding: 20px 16px; }
+  .join-title { font-size: 1.3rem; }
+  .join-nick-input { font-size: 1rem; padding: 12px 16px; }
 }
 .header-logo {
   position: absolute;

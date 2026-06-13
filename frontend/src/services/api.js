@@ -34,7 +34,7 @@ export const getScore = async (userId) => {
 
 export const sendMessage = async (userId, message, type = 'SimpleUtterance', callback = null) => {
   const requestData = callback 
-    ? { callback }
+    ? { callback: { title: callback.title || '', payload: callback.payload } }
     : { original_utterance: message, type };
   
   const payload = {

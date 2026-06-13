@@ -9,10 +9,9 @@ import LeaderboardPage from './pages/LeaderboardPage';
 import UserPage from './pages/UserPage';
 import RulesPage from './pages/RulesPage';
 import FeedbackPage from './pages/FeedbackPage';
+import VoicePage from './pages/VoicePage';
 import InstallPage from './pages/InstallPage';
 import MyDuelsPage from './pages/MyDuelsPage';
-import HomePageV2 from './pages/HomePageV2';
-import HomePageV3 from './pages/HomePageV3';
 import './App.css';
 import { trackPageView } from './services/metrica';
 
@@ -24,6 +23,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/game" element={<GamePage />} />
+        <Route path="/voice" element={<VoicePage />} />
         <Route path="/duel" element={<ChallengePage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="/user/:userId" element={<UserPage />} />
@@ -32,8 +32,6 @@ function App() {
         <Route path="/feedback" element={<FeedbackPage />} />
         <Route path="/install" element={<InstallPage />} />
         <Route path="/my-duels" element={<MyDuelsPage />} />
-        <Route path="/v2" element={<HomePageV2 />} />
-        <Route path="/v3" element={<HomePageV3 />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

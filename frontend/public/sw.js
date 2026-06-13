@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cringe-v1';
+const CACHE_NAME = 'cringe-v6';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

@@ -59,11 +59,15 @@ const GamePage = () => {
   });
   const [scoreData, setScoreData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showStats, setShowStats] = useState(false);
+  const [scorePulse, setScorePulse] = useState(false);
+  const prevScore = useRef(0);
   const [inputText, setInputText] = useState('');
   const [currentButtons, setCurrentButtons] = useState([]);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const initUser = async () => {
       const realUserId = localStorage.getItem('userId');
       const yid = localStorage.getItem('yandexId') || '';
@@ -97,8 +101,9 @@ const GamePage = () => {
     if (activeUserId) loadScore();
   }, [activeUserId]);
 
+  const prevMsgCount = useRef(0);
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    prevMsgCount.current = messages.length;
   }, [messages]);
 
   // Save last pair to localStorage
@@ -124,6 +129,11 @@ const GamePage = () => {
   const loadScore = async () => {
     try {
       const data = await getScore(activeUserId);
+      if (data && data.score !== prevScore.current) {
+        setScorePulse(true);
+        setTimeout(() => setScorePulse(false), 500);
+        prevScore.current = data.score;
+      }
       setScoreData(data);
     } catch (error) {
       console.error('Error loading score:', error);
@@ -167,6 +177,7 @@ const GamePage = () => {
         image: response.response.image,
         buttons: response.response.buttons,
         end_session: response.response.end_session,
+        grade_data: response.response.grade_data || null,
       };
 
       // Убираем лоадер перед добавлением сообщений
@@ -236,7 +247,8 @@ const GamePage = () => {
         text: response.response.text,
         image: response.response.image,
         buttons: response.response.buttons,
-        end_session: response.response.end_session
+        end_session: response.response.end_session,
+        grade_data: response.response.grade_data || null,
       };
 
       // Убираем лоадер перед добавлением сообщений
@@ -271,6 +283,7 @@ const GamePage = () => {
   };
 
   const [showExitModal, setShowExitModal] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const [pendingPath, setPendingPath] = useState('/');
 
   const safeNavigate = (path) => {
@@ -287,15 +300,15 @@ const GamePage = () => {
   return (
     <div className="game-page">
       <audio ref={musicRef} src="/sounds/ambient.mp3?v=2" preload="auto" loop />
-      <button onClick={() => { const m = musicRef.current; const v = !voiceOn; setVoiceOn(v); localStorage.setItem('voiceOn', v); if (!v) { window.speechSynthesis?.cancel(); if (m) m.pause(); } else { if (m && m.paused) { m.volume = 0.3; m.play().catch(()=>{}); } } }} style={{position:'fixed',bottom:16,right:16,background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'50%',width:36,height:36,color:'#fff',fontSize:16,cursor:'pointer',zIndex:999}}>{voiceOn ? '🔊' : '🔇'}</button>
+      <button onClick={() => { const m = musicRef.current; const v = !voiceOn; setVoiceOn(v); localStorage.setItem('voiceOn', v); if (!v) { window.speechSynthesis?.cancel(); if (m) m.pause(); } else { if (m && m.paused) { m.volume = 0.3; m.play().catch(()=>{}); } } }} style={{display:'none'}}>{voiceOn ? '🔊' : '🔇'}</button>
       {showExitModal && (
         <div className="exit-modal-overlay">
           <div className="exit-modal">
             <div className="exit-modal-title">Сохранить результат?</div>
-            <div className="exit-modal-text">Если выйдете без сохранения, прогресс потеряется.</div>
+            <div className="exit-modal-text">Войдите через Яндекс, чтобы сохранить очки и рейтинг.</div>
             <button className="exit-modal-btn save" onClick={() => {
               navigate('/login');
-            }}>Сохранить и войти</button>
+            }}>Войти через Яндекс</button>
             <button className="exit-modal-btn discard" onClick={() => {
               setShowExitModal(false);
               localStorage.removeItem('guestUserId');
@@ -305,13 +318,93 @@ const GamePage = () => {
           </div>
         </div>
       )}
-      <AppHeader backTo="/" onBack={handleBack} rightButtons={[{ label: '📖', onClick: () => safeNavigate('/rules') }, { label: '👤', onClick: () => safeNavigate('/profile') }]} />
+      <AppHeader backTo="/" onBack={handleBack} rightButtons={[{ label: '☰', onClick: () => setShowMenu(!showMenu) }]} />
+      {showMenu && (
+        <div className="game-menu-overlay" onClick={() => setShowMenu(false)}>
+          <div className="game-menu" onClick={(e) => e.stopPropagation()}>
+            <button className="game-menu-item" onClick={() => { setShowMenu(false); navigate('/leaderboard'); }}>🏆 Рейтинг</button>
+            <button className="game-menu-item" onClick={() => { setShowMenu(false); setInputText('подсказка'); }}>💡 Подсказка</button>
+            <button className="game-menu-item" onClick={() => { setShowMenu(false); navigate('/rules'); }}>📖 Правила</button>
+            <button className="game-menu-item" onClick={() => { setShowMenu(false); setInputText('добавить свою ситуацию'); }}>✍️ Добавить кринж</button>
+            <button className="game-menu-item" onClick={() => { setShowMenu(false); navigate('/duel'); }}>⚔️ Онлайн дуэль</button>
+            <button className="game-menu-item" onClick={() => { setShowMenu(false); navigate('/profile'); }}>👤 Профиль</button>
+          </div>
+        </div>
+      )}
       <Helmet>
         <title>Играть — Бой с кринжем | Игра с Алисой</title>
         <meta name="description" content="Попадай в неловкие ситуации и выходи из них с блеском! Одиночная игра с AI-судьёй." />
       </Helmet>
 
       <div className="game-content">
+        {/* Desktop sidebar stats */}
+        {scoreData && (
+          <div className="game-sidebar">
+            <div className="score-panel">
+              <h2 className="score-title">Статистика</h2>
+              <div className="score-content">
+                <div className="score-item">
+                  <span className="score-label">Очки</span>
+                  <span className="score-value">{scoreData.score || 0}</span>
+                </div>
+                <div className="score-item">
+                  <span className="score-label">Рейтинг</span>
+                  <span className="score-value">{scoreData.rating || 0}</span>
+                </div>
+                <div className="score-item">
+                  <span className="score-label">Раундов</span>
+                  <span className="score-value">{scoreData.rounds || 0}</span>
+                </div>
+                <div className="score-item">
+                  <span className="score-label">Стресс</span>
+                  <span className="score-value stress">{Math.max(0, scoreData.stress_level || 0)}</span>
+                </div>
+              </div>
+              <div className="sidebar-status">{isGuest ? '👻 Гость' : '✅ Авторизован'}</div>
+            </div>
+          </div>
+        )}
+        {/* Mobile stats bar (hidden on desktop) */}
+        {scoreData && (
+          <div className="stats-bar mobile-only" onClick={() => setShowStats(true)}>
+            <span>Очки: <b className={scorePulse ? 'pulse' : ''}>{scoreData?.score || 0}</b></span>
+            <span>Рейтинг: <b className={scorePulse ? 'pulse' : ''}>{scoreData?.rating || 0}</b></span>
+            <span>Стресс: <b className={scorePulse ? 'pulse' : ''}>{Math.max(0, scoreData?.stress_level || 0)}</b></span>
+            <span className="guest-badge">{isGuest ? '👻 Гость' : '✅'}</span>
+          </div>
+        )}
+        {/* Mobile drawer */}
+        {showStats && (
+          <div className="stats-overlay" onClick={() => setShowStats(false)}>
+            <div className="stats-drawer" onClick={(e) => e.stopPropagation()}>
+              <div className="score-panel">
+                <h2 className="score-title">Статистика</h2>
+                {scoreData ? (
+                  <div className="score-content">
+                    <div className="score-item">
+                      <span className="score-label">Очки:</span>
+                      <span className="score-value">{scoreData.score || 0}</span>
+                    </div>
+                    <div className="score-item">
+                      <span className="score-label">Рейтинг:</span>
+                      <span className="score-value">{scoreData.rating || 0}</span>
+                    </div>
+                    <div className="score-item">
+                      <span className="score-label">Раундов:</span>
+                      <span className="score-value">{scoreData.rounds || 0}</span>
+                    </div>
+                    <div className="score-item">
+                      <span className="score-label">Стресс:</span>
+                      <span className="score-value stress">{Math.max(0, scoreData.stress_level || 0)}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="score-loading">Загрузка...</div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
         <div className="game-chat-container">
           <div className="game-chat">
             {loading && messages.length === 0 && (
@@ -325,7 +418,13 @@ const GamePage = () => {
                 </div>
                 <div className="message-container">
                   <div className="game-message-bubble">
-                    Напишите ваше сообщение чтобы продолжить игру
+                    👋 Привет! Это игра «Бой с Кринжем». Я буду предлагать неловкие ситуации, а ты будешь придумывать из них выход. Самые остроумные ответы получают максимум очков. Напиши «давай играть» и мы начнем!
+                  </div>
+                  <div className="inline-buttons">
+                    <button className="inline-button" onClick={() => { setInputText('давай играть'); document.querySelector('.chat-input').focus(); }}>🎮 Играть</button>
+                    <button className="inline-button" onClick={() => { navigate('/duel'); }}>👥 Играть компанией</button>
+                    <button className="inline-button" onClick={() => { navigate('/rules'); }}>📖 Правила</button>
+                    <button className="inline-button" onClick={() => { navigate('/leaderboard'); }}>🏆 Рейтинг</button>
                   </div>
                 </div>
               </div>
@@ -363,18 +462,45 @@ const GamePage = () => {
                         </div>
                       )}
                       
+                      {message.grade_data && (() => {
+                        const g = message.grade_data.score;
+                        const c = message.grade_data.cringe;
+                        const emoji = g >= 9 ? '🔥' : g >= 7 ? '😎' : g >= 5 ? '😅' : g >= 3 ? '😬' : '💀';
+                        const reaction = g >= 9 ? 'Мастер выхода!' : g >= 7 ? 'Неплохо!' : g >= 5 ? 'Пройдет...' : g >= 3 ? 'Кринж детектед' : 'Полный провал!';
+                        const cringeEmoji = c >= 8 ? '🤦‍♂️🤦‍♂️🤦‍♂️' : c >= 5 ? '🤦‍♂️' : c >= 3 ? '😬' : '😎';
+                        const scoreClass = g >= 8 ? 'grade-high' : g >= 5 ? 'grade-mid' : 'grade-low';
+                        return (
+                          <div className={`grade-card ${g >= 8 ? 'grade-card-fire' : ''}`}>
+                            <div className="grade-emoji">{emoji}</div>
+                            <div className="grade-score-row">
+                              <div className="grade-score">
+                                <span className={`grade-number ${scoreClass}`}>{g}</span>
+                                <span className="grade-of">/10</span>
+                              </div>
+                              <div className="grade-reaction">{reaction}</div>
+                            </div>
+                            <div className="grade-cringe-row">
+                              <span className="cringe-emoji">{cringeEmoji}</span>
+                              <div className="cringe-bar">
+                                <div className="cringe-fill" style={{width: `${c * 10}%`}}></div>
+                              </div>
+                              <span className="cringe-value">{c}/10</span>
+                            </div>
+                          </div>
+                        );
+                      })()}
                       <div className="game-message-bubble">
                         {message.text}
-                        {message.buttons && message.buttons.length > 0 && (
-                          <div className="inline-buttons">
-                            {message.buttons.map((btn, bi) => (
-                              <button key={bi} className="inline-button" onClick={() => handleButtonClick(btn)} disabled={loading}>
-                                {btn.title}
-                              </button>
-                            ))}
-                          </div>
-                        )}
                       </div>
+                      {message.buttons && message.buttons.length > 0 && (
+                        <div className="message-buttons">
+                          {message.buttons.map((btn, bi) => (
+                            <button key={bi} className="message-action-btn" onClick={() => handleButtonClick(btn)} disabled={loading}>
+                              {btn.title}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </>
                 )}
@@ -402,54 +528,26 @@ const GamePage = () => {
           </div>
 
           <form onSubmit={handleTextSubmit} className="chat-input-form">
-            <input
-              type="text"
+            <textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleTextSubmit(e); }}}
               placeholder="Введите ваш ответ..."
               className="chat-input"
               disabled={loading}
+              rows={1}
+              onInput={(e) => { e.target.style.height = 'auto'; e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px'; }}
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="chat-send-button"
               disabled={loading || !inputText.trim()}
             >
-              Отправить
+              →
             </button>
           </form>
         </div>
 
-        <div className="score-sidebar">
-          <div className="score-panel">
-            <h2 className="score-title">Статистика</h2>
-            {scoreData ? (
-              <div className="score-content">
-                <div className="score-item">
-                  <span className="score-label">Очки:</span>
-                  <span className="score-value">{scoreData.score || 0}</span>
-                </div>
-                <div className="score-item">
-                  <span className="score-label">Рейтинг:</span>
-                  <span className="score-value">{scoreData.rating || 0}</span>
-                </div>
-                <div className="score-item">
-                  <span className="score-label">Раундов:</span>
-                  <span className="score-value">{scoreData.rounds || 0}</span>
-                </div>
-                <div className="score-item">
-                  <span className="score-label">Уровень стресса:</span>
-                  <span className="score-value stress">{scoreData.stress_level || 0}</span>
-                </div>
-              </div>
-            ) : (
-              <div className="score-loading">Загрузка...</div>
-            )}
-          </div>
-          <div className="game-guest-buttons">
-            <button className="game-guest-btn duel" onClick={() => navigate('/duel')}>⚔️ Онлайн дуэль</button>
-          </div>
-        </div>
       </div>
     </div>
   );

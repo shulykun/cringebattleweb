@@ -258,6 +258,20 @@ def send_message():
 
 import random
 
+# MySQL for leaderboard
+try:
+    import pymysql
+    MYSQL_CONN = {
+        'host': '62.113.96.121',
+        'port': 3307,
+        'user': 'rbrmbvps_cb22',
+        'password': 'fs4leLAJfb69v',
+        'database': 'vstoch2s_cb22',
+        'charset': 'utf8',
+    }
+except ImportError:
+    MYSQL_CONN = None
+
 # ── Duel2 — игровая логика (in-memory) ──────────
 duel_rooms = {}        # room_id -> dict
 duel_players = {}      # player_id -> dict
@@ -276,13 +290,14 @@ def demo_answer():
             return jsonify({'status': 'error', 'message': 'Слишком короткий ответ'}), 400
 
         try:
-            resp = requests.post('https://api.deepseek.com/chat/completions', {
-                'timeout': 15,
-                'headers': {
+            resp = requests.post(
+                'https://api.deepseek.com/chat/completions',
+                timeout=15,
+                headers={
                     'Authorization': 'Bearer sk-6ff99adb03a144a0996d4ecc8b349a6a',
                     'Content-Type': 'application/json',
                 },
-                'json': {
+                json={
                     'model': 'deepseek-chat',
                     'messages': [
                         {'role': 'system', 'content': 'Ты оцениваешь выход из неловкой ситуации. Ответь ТОЛЬКО в формате JSON: {"score": <число от 1 до 10>, "comment": "<короткий комментарий на русском>"}'},
@@ -291,7 +306,7 @@ def demo_answer():
                     'max_tokens': 150,
                     'temperature': 0.8,
                 },
-            })
+            )
             resp.raise_for_status()
             text = resp.json()['choices'][0]['message']['content']
             import json as _json
@@ -308,7 +323,8 @@ def demo_answer():
                 comment = text[:100]
             score = max(1, min(10, score))
             return jsonify({'status': 'ok', 'score': score, 'comment': comment})
-        except Exception:
+        except Exception as de:
+            import sys; print(f'[DEMO-DS-ERROR] {de}', file=sys.stderr, flush=True)
             score = random.randint(4, 8)
             comments = [
                 "Остроумно, но можно лучше!",
@@ -628,6 +644,32 @@ def health():
     Health check endpoint
     """
     return jsonify({'status': 'ok'})
+
+
+@app.route('/api/leaderboard')
+def leaderboard():
+    """GET /api/leaderboard — таблица лидеров из MySQL"""
+    if not MYSQL_CONN:
+        return jsonify({"status": "error", "message": "MySQL not configured", "leaderboard": []}), 200
+    try:
+        import pymysql
+        conn = pymysql.connect(**MYSQL_CONN)
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT ur.user_id, u.nickname, ur.sum_grade, ur.sum_grade_cringe, ur.game_count
+            FROM user_rating ur
+            JOIN users u ON u.id = ur.user_id
+            ORDER BY sum_grade DESC
+            LIMIT 50
+        """)
+        cols = [d[0] for d in cursor.description]
+        rows = [dict(zip(cols, row)) for row in cursor.fetchall()]
+        for i, row in enumerate(rows):
+            row['rank'] = i + 1
+        conn.close()
+        return jsonify({"status": "success", "leaderboard": rows})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e), "leaderboard": []}), 200
 
 
 if __name__ == '__main__':

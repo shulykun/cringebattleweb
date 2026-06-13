@@ -95,4 +95,5 @@ const ProfilePage = () => {
   );
 };
 
+        <div className="alice-badge" style={{textAlign:"center",padding:"12px 0 0"}}><a href="https://dialogs.yandex.ru/store/skills/78318e89-boj-s-krinzhe?utm_source=site&utm_medium=badge&utm_campaign=v1&utm_term=d1" target="_blank" rel="noopener noreferrer"><img alt="Алиса это умеет" src="https://dialogs.s3.yandex.net/badges/v1-term1.svg" /></a></div>
 export default ProfilePage;

@@ -11,7 +11,7 @@ const POLL_INTERVAL = 3000;
 
 const ChallengePage = () => {
   const [userId] = useState(() => localStorage.getItem('userId') || '');
-  const isYandexUser = localStorage.getItem('yandexId') && !localStorage.getItem('yandexId').startsWith('guest_') && !localStorage.getItem('yandexId').startsWith('pseudo_');
+  const isYandexUser = userId && localStorage.getItem('yandexId') && !localStorage.getItem('yandexId').startsWith('guest_') && !localStorage.getItem('yandexId').startsWith('pseudo_');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const pollRef = useRef(null);
@@ -97,7 +97,6 @@ const ChallengePage = () => {
       return;
     }
     if (!userId) {
-      navigate('/login');
       return;
     }
     return () => stopPolling();

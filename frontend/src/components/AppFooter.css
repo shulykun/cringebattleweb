@@ -1,7 +1,8 @@
 .app-footer {
   display: flex;
-  justify-content: center;
-  gap: 24px;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
   padding: 16px 24px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   background: rgba(255, 255, 255, 0.02);
@@ -21,6 +22,21 @@
 
 .footer-link:hover {
   color: rgba(255, 255, 255, 0.6);
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.alice-badge {
+  text-align: center;
+}
+
+.alice-badge img {
+  height: 36px;
 }
 
 @media (max-width: 480px) {

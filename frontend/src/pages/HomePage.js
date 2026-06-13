@@ -1,14 +1,54 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HomePage.css';
+import AppFooter from '../components/AppFooter';
 
-import { reachGoal } from '../services/metrica';
+
+import { reachGoal, trackPageView } from '../services/metrica';
 
 const HomePage = () => {
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
   const username = localStorage.getItem('username') || localStorage.getItem('nickname') || '';
   const ambientRef = useRef(null);
+
+  const [demoSituation, setDemoSituation] = useState('');
+  const [demoAnswer, setDemoAnswer] = useState('');
+  const [demoLoading, setDemoLoading] = useState(false);
+  const [demoResult, setDemoResult] = useState(null);
+
+  const situations = [
+    "Ты возвращаешься со школы и у дома видишь машину отца. Решаешь открыть дверь, чтобы поздороваться, но открыв дверь понимаешь что внутри сидят совершенно незнакомые люди. Как ты отреагируешь?",
+    "Ты играл в шахматы с ребёнком и перед игрой сказал что если он у тебя выиграет, то сто процентов купишь ему квартиру. Все вокруг это видели. Но ребёнок оказался вундеркиндом и ты ему проиграл. Что будешь делать?",
+    "Ты профессор биологии и вот однажды нашёл новый вид червяка и рассказал об этом всем. Однако на исследованиях выяснилось, что это мармеладный червяк. Что будешь делать?",
+    "Ты решил удивить друзей и залезть к ним в окно первого этажа в костюме Деда Мороза. Залезаешь, кричишь «Хо-хо-хо!», а там сидит незнакомая семья и ужинает. Ты ошибся окном. Что скажешь?",
+    "В кафе ты взял трубочку и начал пить чужой коктейль — он стоял на краю соседнего стола и выглядел точно как твой. Хозяин смотрит на тебя с открытым ртом. Что скажешь?",
+  ];
+
+  useEffect(() => {
+    setDemoSituation(situations[Math.floor(Math.random() * situations.length)]);
+  }, []);
+
+  const handleDemoSubmit = async () => {
+    if (!demoAnswer.trim() || demoAnswer.trim().length < 2) return;
+    setDemoLoading(true);
+    reachGoal('demo_answer');
+    trackPageView('/virtual/demo-answer');
+    try {
+      const res = await fetch('/api/demo-answer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ situation: demoSituation, answer: demoAnswer })
+      });
+      const data = await res.json();
+      if (data.status === 'ok') {
+        setDemoResult({ score: data.score, comment: data.comment });
+      }
+    } catch (e) {
+      setDemoResult({ score: 7, comment: 'Неплохо, но можно креативнее!' });
+    }
+    setDemoLoading(false);
+  };
 
   useEffect(() => { reachGoal('page_view'); }, []);
 
@@ -106,6 +146,49 @@ const HomePage = () => {
             <span className="feature-desc">Создай комнату, поделись с другом. Вы оба в одной неловкой ситуации. Кто выкрутится лучше — забирает очки</span>
           </div>
         </div>
+        {/* Demo try block */}
+        <div className="demo-block">
+          <h2 className="demo-title">⚡ Попробуй прямо сейчас</h2>
+          <div className="demo-situation">
+            <span className="demo-situation-label">Ситуация:</span>
+            <p className="demo-situation-text">{demoSituation}</p>
+          </div>
+          {!demoResult ? (
+            <div className="demo-input-wrap">
+              <textarea
+                className="demo-input"
+                placeholder="Как выкрутишься?"
+                value={demoAnswer}
+                onChange={(e) => setDemoAnswer(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleDemoSubmit(); }}}
+                maxLength={200}
+                disabled={demoLoading}
+                rows={2}
+              />
+              <button
+                className="demo-submit-small"
+                onClick={handleDemoSubmit}
+                disabled={demoLoading || !demoAnswer.trim() || demoAnswer.trim().length < 2}
+              >
+                {demoLoading ? <span className="demo-btn-spinner"/> : '→'}
+              </button>
+            </div>
+          ) : (
+            <div className="demo-result">
+              <div className="demo-score">
+                <span className="demo-score-value">{demoResult.score}</span>
+                <span className="demo-score-label">/ 10</span>
+              </div>
+              <p className="demo-comment">{demoResult.comment}</p>
+              <div className="demo-actions">
+                <button className="demo-play" onClick={() => { reachGoal('demo_to_game'); navigate('/game'); }}>
+                  💬 Играть дальше
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
         <button className="home-button rules-link" onClick={() => { reachGoal('click_rules'); navigate('/rules'); }}>
           <span className="button-icon">📖</span>
           <span className="button-text">
@@ -127,6 +210,7 @@ const HomePage = () => {
           }
         }} style={{position:'fixed',bottom:12,right:12,background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'50%',width:40,height:40,color:'#fff',fontSize:18,cursor:'pointer',zIndex:999}}>🔇</button>
       </div>
+      <AppFooter />
     </div>
   );
 };
